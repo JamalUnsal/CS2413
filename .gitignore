@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Tooling
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Runtime data (never commit credentials, keys or audit logs)
+data/users.json
+data/users.json.tmp
+data/users.db
+data/users.db-wal
+data/users.db-shm
+data/integrity.key
+data/audit.log

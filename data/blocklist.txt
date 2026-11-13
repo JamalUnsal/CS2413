@@ -1,0 +1,37 @@
+# Common-password blocklist (starter subset - owner: Hazem Alfeky)
+#
+# One password per line, case-insensitive. Hazem replaces/expands this with a
+# larger subset of a public leaked-password list (e.g. RockYou) for the
+# Experiment 4 test set.
+password
+password1
+password123
+123456
+12345678
+123456789
+1234567890
+qwerty
+qwerty123
+abc123
+letmein
+welcome
+welcome1
+admin
+admin123
+iloveyou
+monkey
+dragon
+football
+baseball
+sunshine
+princess
+shadow
+master
+superman
+trustno1
+passw0rd
+p@ssw0rd
+qazwsx
+654321
+111111
+000000

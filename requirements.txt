@@ -1,0 +1,16 @@
+# Core runtime (implemented modules)
+bcrypt>=4.1
+pyotp>=2.9
+
+# Optional - only needed for the scannable QR code in the Tkinter MFA dialog.
+# The GUI degrades gracefully to showing the secret/URI as text without these.
+qrcode>=7.4
+Pillow>=10.0
+
+# Placeholder modules - install when their owners implement them
+argon2-cffi>=23.1   # Experiment 2 hashing comparison
+zxcvbn>=4.4.28      # password strength scoring
+matplotlib>=3.8     # result graphs
+
+# Development / tests
+pytest>=8
