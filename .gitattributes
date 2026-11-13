@@ -1,0 +1,13 @@
+# Normalize all text files to LF in the repository and in the working tree.
+# This keeps diffs stable across Windows/macOS/Linux teammates.
+* text=auto eol=lf
+
+# Binary files - never apply text normalization
+*.pdf   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.db    binary
+*.sqlite binary

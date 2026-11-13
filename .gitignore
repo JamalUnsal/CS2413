@@ -19,3 +19,6 @@ data/users.db-wal
 data/users.db-shm
 data/integrity.key
 data/audit.log
+
+# Source proposal (kept locally for reference, not published in the repo)
+Team9_Final_Project_Proposal_Revised_v2.pdf
