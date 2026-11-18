@@ -6,7 +6,7 @@ OWNER: Jennifer Cruza
 
 Description
 
-Master CLI suite orchestrating following security evaluations:
+Test simulator orchestrating following security evaluations:
 1. Experiment 1: JSON Credential Data Inspection (from experiments/exp01_data_inspection.py)
 2. Experiment 5: Automated Dictionary Attack (from tools/attack_dictionary.py)
 3. Experiment 5: Automated Brute-Force Attack (from tools/attack_bruteforce.py)
@@ -25,7 +25,7 @@ REPO_ROOT = SCRIPT_DIR.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-# Import Experiment 1
+# import Experiment 1
 try:
     from experiments.exp01_data_inspection import inspect_json_storage
 except ImportError:
@@ -61,7 +61,7 @@ except ImportError:
 class TargetSystemSimulator:
     """
     Mock implementation of the team's authentication backend.
-    Used for standalone attack script testing prior to team module integration.
+    (used for standalone attack script testing prior to team module integration)
     """
     def __init__(self, target_user: str = "alice", correct_password: str = "Secur3P@ss2026!",
                  defense_mode: str = "fixed_lockout", lockout_threshold: int = 5,
@@ -83,7 +83,7 @@ class TargetSystemSimulator:
         start_time = time.time()
         now = start_time
 
-        # Check if currently locked out
+        # check if currently locked out
         if now < self.locked_until:
             return {
                 "success": False,
@@ -92,7 +92,7 @@ class TargetSystemSimulator:
                 "latency_sec": time.time() - start_time
             }
 
-        # Apply exponential backoff delay if enabled
+        # apply exponential backoff delay if enabled
         if self.defense_mode == "exponential_backoff" and self.failed_attempts > 0:
             delay = self.backoff_delay * (2 ** (self.failed_attempts - 1))
             time.sleep(min(delay, 2.0))
@@ -142,7 +142,7 @@ def main():
     simulator = TargetSystemSimulator(target_user=args.target_user, defense_mode=args.defense_mode)
 
     print("\n======================================================================")
-    print("  CS2413 TEAM 9 SECURITY EVALUATION SUITE ")
+    print("  ATTACK SIMULATOR - SECURITY EVALUATION ")
     print("======================================================================")
 
     if args.mode in ["inspect", "all"]:
@@ -150,7 +150,7 @@ def main():
 
     if args.mode in ["dictionary", "all"]:
         run_dictionary_attack(simulator.login, target_user=args.target_user,
-                              wordlist_path=args.wordlist, max_attempts=args.max_attempts)
+                             max_attempts=args.max_attempts)
 
     if args.mode in ["brute_force", "all"]:
         run_brute_force_attack(simulator.login, target_user=args.target_user, max_attempts=10)
