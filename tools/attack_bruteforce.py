@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """
-Brute-Force Attack Script
-OWNER: Jennifer Cruza
+Experiment 5: Automated Brute-Force Attack Simulation (attack_bruteforce.py)
+CS2413 - Team 9 Password Authentication System Security Design
+Author/Lead: Jennifer Cruza (Assisted by Jamal Unsal)
 
-Automated brute-force attack harness generating character combinations to test
-rate-limiting, account lockout, and throttling defenses.
+Description:
+Automated brute-force attack tool. Iterates through generated character combinations 
+against the authentication system to evaluate account lockout and throttling capabilities.
 """
 
 from __future__ import annotations
@@ -15,23 +17,40 @@ import string
 import sys
 import time
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Callable, Dict, Any
 
-# ensure project root is in Python path
+# Ensure project root is in Python path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 
-def run_brute_force_attack(
-    login_func,
-    target_user: str = "alice",
-    max_length: int = 4,
-    max_attempts: int = 50,
-    delay: float = 0.0
-) -> Dict[str, Any]:
+def parse_login_response(resp: Any) -> tuple[bool, bool, str]:
+    """
+    Normalizes response whether it's a dictionary or a LoginResult dataclass.
+    Returns (success, locked, message).
+    """
+    if isinstance(resp, dict):
+        success = bool(resp.get("success", False))
+        locked = bool(resp.get("locked", False)) or resp.get("reason") == "locked_out"
+        msg = str(resp.get("message", ""))
+    else:
+        success = bool(getattr(resp, "success", False))
+        reason = getattr(resp, "reason", None)
+        locked = (reason == "locked_out") or bool(getattr(resp, "locked", False))
+        msg = str(getattr(resp, "message", ""))
+    return success, locked, msg
+
+
+def run_brute_force_attack(login_func: Callable[[str, str], Any],
+                           target_user: str = "alice",
+                           max_length: int = 4,
+                           max_attempts: int = 50) -> Dict[str, Any]:
+    """
+    Executes automated Brute-Force Attack simulation against target login function.
+    """
     print("\n" + "="*70)
-    print(f"  EXPERIMENT 5: AUTOMATED BRUTE-FORCE ATTACK (Target: '{target_user}')")
+    print(f"  EXPERIMENT 5: AUTOMATED BRUTE-FORCE ATTACK SIMULATION (Target: '{target_user}')")
     print("="*70)
 
     charset = string.ascii_lowercase + string.digits
@@ -52,44 +71,25 @@ def run_brute_force_attack(
             break
 
         attempts += 1
-        if delay > 0:
-            time.sleep(delay)
-
-        res = login_func(target_user, candidate)
-
-        # normalize response
-        success = False
-        message = ""
-        locked = False
-
-        if isinstance(res, dict):
-            success = res.get("success", False)
-            message = res.get("message", res.get("reason", ""))
-            locked = res.get("locked", res.get("reason") == "locked_out")
-        elif isinstance(res, tuple):
-            success = res[0]
-            message = str(res[1])
-            locked = "locked" in message.lower()
-        else:
-            success = bool(res)
+        resp = login_func(target_user, candidate)
+        success, locked, msg = parse_login_response(resp)
 
         if locked:
             lockout_occurred = True
-            print(f"  [Attempt {attempts:03d}] Candidate: '{candidate:<10}' -> RESULT: ACCOUNT LOCKED OUT!")
+            print(f"  [Attempt {attempts:03d}] Brute-Force: '{candidate:<10}' -> RESULT: ACCOUNT LOCKED OUT!")
             break
 
         if success:
             successful_password = candidate
-            print(f"  [Attempt {attempts:03d}] Candidate: '{candidate:<10}' -> RESULT: SUCCESS! Password cracked!")
+            print(f"  [Attempt {attempts:03d}] Brute-Force: '{candidate:<10}' -> RESULT: SUCCESS!")
             break
 
-        print(f"  [Attempt {attempts:03d}] Candidate: '{candidate:<10}' -> RESULT: REJECTED")
+        print(f"  [Attempt {attempts:03d}] Brute-Force: '{candidate:<10}' -> RESULT: REJECTED")
 
     total_time = time.time() - start_time
 
     print("-" * 70)
     print("BRUTE-FORCE ATTACK EVALUATION SUMMARY:")
-    print(f"  • Target Username       : {target_user}")
     print(f"  • Total Attempts Made   : {attempts}")
     print(f"  • Total Execution Time  : {total_time:.4f} seconds")
     print(f"  • Account Locked Out    : {'YES (Defense Working)' if lockout_occurred else 'NO'}")
@@ -100,37 +100,73 @@ def run_brute_force_attack(
         "attempts": attempts,
         "total_time_sec": total_time,
         "lockout_occurred": lockout_occurred,
-        "success": bool(successful_password)
+        "success": bool(successful_password),
+        "recovered_password": successful_password
     }
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Brute-Force Attack Tool (CS2413 Team 9 - Jennifer Cruza)")
-    parser.add_argument("--target-user", default="alice", help="Target username for brute-force attack.")
-    parser.add_argument("--max-length", type=int, default=4, help="Maximum password character length to test.")
-    parser.add_argument("--max-attempts", type=int, default=50, help="Maximum number of candidate guesses.")
-    parser.add_argument("--delay", type=float, default=0.0, help="Delay between attempts in seconds.")
+    parser = argparse.ArgumentParser(description="Experiment 5 Brute-Force Attack Tool (Jennifer Cruza)")
+    parser.add_argument("--target-user", default="alice", help="Target username for attack testing.")
+    parser.add_argument("--max-length", type=int, default=4, help="Maximum password length for combination sweep.")
+    parser.add_argument("--max-attempts", type=int, default=50, help="Maximum attack attempts allowed.")
     args = parser.parse_args()
 
-    # dynamic import of auth service if available, otherwise mock
-    try:
-        from auth_system.auth import login
-        login_func = login
-    except ImportError:
-        def mock_login(username, password):
-            print("\nMOCKING\n")
-            if password == "a1":
-                return {"success": True, "message": "Authenticated."}
-            return {"success": False, "message": "Invalid password."}
-        login_func = mock_login
+    login_fn = None
 
-    run_brute_force_attack(
-        login_func,
-        target_user=args.target_user,
-        max_length=args.max_length,
-        max_attempts=args.max_attempts,
-        delay=args.delay
-    )
+    try:
+        from auth_system.auth import AuthService
+        print("[*] Detected live auth_system.auth.AuthService!")
+        try:
+            from auth_system.storage.memory import MemoryStorageBackend
+            from auth_system.sessions import SessionManager
+            from auth_system.mfa import MfaService
+            from auth_system.lockout import AccountLockoutPolicy
+            from auth_system.audit import AuditLog
+            from auth_system.config import Settings
+
+            storage = MemoryStorageBackend()
+            auth_svc = AuthService(
+                storage=storage,
+                sessions=SessionManager(),
+                mfa=MfaService(),
+                lockout=AccountLockoutPolicy(),
+                audit=AuditLog(),
+                settings=Settings()
+            )
+            login_fn = auth_svc.login
+        except Exception:
+            pass
+    except ImportError:
+        pass
+
+    if login_fn is None:
+        try:
+            from auth_system.auth import login as live_login
+            login_fn = live_login
+        except ImportError:
+            try:
+                from auth_system.verification import login as live_login
+                login_fn = live_login
+            except ImportError:
+                print("[!] Live auth module not detected on sys.path; running with stateful Mock backend.")
+
+                class StatefulMockBackend:
+                    def __init__(self, lockout_threshold: int = 5):
+                        self.attempts = 0
+                        self.threshold = lockout_threshold
+
+                    def login(self, username: str, password: str) -> dict[str, Any]:
+                        self.attempts += 1
+                        if self.attempts >= self.threshold:
+                            return {"success": False, "message": "Account locked out.", "locked": True, "reason": "locked_out"}
+                        return {"success": False, "message": "Invalid password.", "locked": False, "reason": "bad_password"}
+
+                mock_backend = StatefulMockBackend(lockout_threshold=5)
+                login_fn = mock_backend.login
+
+    run_brute_force_attack(login_fn, target_user=args.target_user,
+                           max_length=args.max_length, max_attempts=args.max_attempts)
 
 
 if __name__ == "__main__":
