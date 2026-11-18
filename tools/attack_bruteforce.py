@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """
-Experiment 5: Automated Brute-Force Attack Simulation
+Bruteforce Attack Tool
 
-Author/Lead: Jennifer Cruza
+OWNER: Jennifer Cruza
 
-Description:
 Automated brute-force attack tool. Iterates through generated character combinations 
 against the authentication system to evaluate account lockout and throttling capabilities.
 """
@@ -116,7 +115,7 @@ def main():
     parser.add_argument("--max-attempts", type=int, default=50, help="Maximum attack attempts allowed")
     args = parser.parse_args()
 
-    # Connect to the actual authentication system
+    # connect to authentication system
     from auth_system.runtime import build_runtime
     from auth_system.config import Settings
 

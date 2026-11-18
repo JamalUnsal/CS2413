@@ -3,6 +3,9 @@
 Dictionary Attack Tool
 
 OWNER: Jennifer Cruza
+
+Automated dictionary attack tool. Iterates through a predefined list of commonly used passwords (dictionary)
+against the authentication system to evaluate password strength, account lockout, and throttling capabilities.
 """
 
 import argparse
