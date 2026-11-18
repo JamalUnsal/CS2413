@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-Dictionary Attack Script (attack_dictionary.py)
-CS2413 - Team 9 Password Authentication System
+Dictionary Attack Script
 OWNER: Jennifer Cruza
 
 Automated dictionary attack harness testing authentication resilience
@@ -15,7 +14,7 @@ import time
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 
-# Ensure project root is in Python path
+# ensure project root is in Python path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -65,7 +64,7 @@ def run_dictionary_attack(
         req_latency = time.time() - req_start
         latencies.append(req_latency)
 
-        # Normalize response formats
+        # normalize response formats
         success = False
         message = ""
         locked = False
@@ -126,7 +125,7 @@ def main():
     parser.add_argument("--delay", type=float, default=0.0, help="Delay between attempts in seconds.")
     args = parser.parse_args()
 
-    # Dynamic import of auth service if available, else mock
+    # dynamic import of auth service if available, otherwise mock
     try:
         from auth_system.verification import login
         login_func = login

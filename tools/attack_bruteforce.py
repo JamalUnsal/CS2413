@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-Brute-Force Attack Script (attack_bruteforce.py)
-CS2413 - Team 9 Password Authentication System
+Brute-Force Attack Script
 OWNER: Jennifer Cruza
 
 Automated brute-force attack harness generating character combinations to test
@@ -18,7 +17,7 @@ import time
 from pathlib import Path
 from typing import Dict, Any, Optional
 
-# Ensure project root is in Python path
+# ensure project root is in Python path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -58,7 +57,7 @@ def run_brute_force_attack(
 
         res = login_func(target_user, candidate)
 
-        # Normalize response
+        # normalize response
         success = False
         message = ""
         locked = False
@@ -113,12 +112,13 @@ def main():
     parser.add_argument("--delay", type=float, default=0.0, help="Delay between attempts in seconds.")
     args = parser.parse_args()
 
-    # Dynamic import of auth service if available, else mock
+    # dynamic import of auth service if available, otherwise mock
     try:
-        from auth_system.verification import login
+        from auth_system.auth import login
         login_func = login
     except ImportError:
         def mock_login(username, password):
+            print("\nMOCKING\n")
             if password == "a1":
                 return {"success": True, "message": "Authenticated."}
             return {"success": False, "message": "Invalid password."}
