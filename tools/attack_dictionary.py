@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Dictionary Test Harness (attack_dictionary-v2.py)
-CS2413 - Team 9 Password Authentication System
+Dictionary Attack Tool
+
 OWNER: Jennifer Cruza
 """
 
@@ -159,51 +159,33 @@ def main():
     parser = argparse.ArgumentParser(description="Dictionary Test Harness (CS2413 Team 9 - Jennifer Cruza)")
     parser.add_argument("--target-user", default="alice", help="Target username for test.")
     parser.add_argument("--wordlist", default=None, help="Path to local wordlist file.")
-    parser.add_argument("--url", default=DEFAULT_WORDLIST_URL, help="Optional remote URL to download wordlist.")
-    parser.add_argument("--max-attempts", type=int, default=50, help="Max candidates to test.")
-    parser.add_argument("--delay", type=float, default=0.0, help="Delay between attempts in seconds.")
+    parser.add_argument("--url", default=DEFAULT_WORDLIST_URL, help="Optional remote URL to download wordlist")
+    parser.add_argument("--max-attempts", type=int, default=50, help="Max candidates to test")
+    parser.add_argument("--delay", type=float, default=0.0, help="Delay between attempts in seconds")
     args = parser.parse_args()
 
-    login_func = None
-    try:
-        from auth_system.auth import AuthService
-        auth_svc = AuthService()
-        login_func = auth_svc.login
-    except ImportError:
-        try:
-            from auth_system.auth import login
-            login_func = login
-        except ImportError:
-            try:
-                from auth_system.verification import login
-                login_func = login
-            except ImportError:
-                print("[!] Live auth module not detected on sys.path; running with stateful Mock backend.")
-                
-                class StatefulMockBackend:
-                    def __init__(self, lockout_threshold: int = 5):
-                        self.attempts = 0
-                        self.threshold = lockout_threshold
-                    
-                    def login(self, username, password):
-                        self.attempts += 1
-                        if self.attempts >= self.threshold:
-                            return {"success": False, "reason": "locked_out", "message": "Account locked due to too many failed attempts."}
-                        if password == "Secur3P@ss2026!":
-                            return {"success": True, "message": "Authenticated."}
-                        return {"success": False, "reason": "invalid_credentials", "message": "Invalid username or password."}
-                
-                mock_inst = StatefulMockBackend()
-                login_func = mock_inst.login
+    from auth_system.runtime import build_runtime
+    from auth_system.config import Settings
 
-    run_dictionary_attack(
-        login_func,
-        target_user=args.target_user,
-        wordlist_path=args.wordlist,
-        remote_url=args.url,
-        max_attempts=args.max_attempts,
-        delay=args.delay
+    settings = Settings(data_dir=PROJECT_ROOT / "data")
+
+    runtime = build_runtime(
+        settings=settings,
+        backend="json"
     )
+
+    login_func = runtime.auth.login
+
+    try:
+        results = run_dictionary_attack(
+            login_func,
+            target_user=args.target_user,
+            wordlist_path=args.wordlist,
+            remote_url=args.url,
+            max_attempts=args.max_attempts
+        )
+    finally:
+        runtime.close()
 
 if __name__ == "__main__":
     main()

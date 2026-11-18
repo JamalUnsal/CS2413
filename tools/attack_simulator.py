@@ -19,11 +19,18 @@ import time
 from pathlib import Path
 from typing import Dict, Any
 
+#seclists most common passwords URL (for dictionary attack)
+WORDLIST_URL = "https://raw.githubusercontent.com/danielmiessler/SecLists/refs/heads/master/Passwords/Common-Credentials/10k-most-common.txt"
+
+
 # ensure project root is in Python path for clean imports across folders
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
+
+from auth_system.runtime import build_runtime
+from auth_system.config import Settings
 
 # import Experiment 1
 try:
@@ -60,100 +67,91 @@ except ImportError:
 
 class TargetSystemSimulator:
     """
-    Mock implementation of the team's authentication backend.
-    (used for standalone attack script testing prior to team module integration)
+    adapter connecting the attack simulator to the real auth system
     """
-    def __init__(self, target_user: str = "alice", correct_password: str = "Secur3P@ss2026!",
-                 defense_mode: str = "fixed_lockout", lockout_threshold: int = 5,
-                 lockout_duration_sec: float = 10.0):
-        self.target_user = target_user
-        self.correct_password = correct_password
-        self.defense_mode = defense_mode  # "unprotected", "fixed_lockout", "exponential_backoff"
-        self.lockout_threshold = lockout_threshold
-        self.lockout_duration_sec = lockout_duration_sec
-        
-        self.failed_attempts = 0
-        self.locked_until = 0.0
-        self.backoff_delay = 0.5  # Base delay in seconds
 
-    def login(self, username: str, password: str) -> Dict[str, Any]:
-        """
-        Simulates login verification endpoint.
-        """
-        start_time = time.time()
-        now = start_time
+    def __init__(self, auth_service):
+        self.auth = auth_service
 
-        # check if currently locked out
-        if now < self.locked_until:
-            return {
-                "success": False,
-                "message": "Account locked due to multiple failed attempts.",
-                "locked": True,
-                "latency_sec": time.time() - start_time
-            }
-
-        # apply exponential backoff delay if enabled
-        if self.defense_mode == "exponential_backoff" and self.failed_attempts > 0:
-            delay = self.backoff_delay * (2 ** (self.failed_attempts - 1))
-            time.sleep(min(delay, 2.0))
-
-        # verify credentials
-        if username == self.target_user and password == self.correct_password:
-            self.failed_attempts = 0
-            self.locked_until = 0.0
-            return {
-                "success": True,
-                "message": "Authentication successful.",
-                "locked": False,
-                "latency_sec": time.time() - start_time
-            }
-        else:
-            self.failed_attempts += 1
-            locked = False
-
-            if self.defense_mode == "fixed_lockout" and self.failed_attempts >= self.lockout_threshold:
-                self.locked_until = now + self.lockout_duration_sec
-                locked = True
-            elif self.defense_mode == "exponential_backoff" and self.failed_attempts >= self.lockout_threshold:
-                self.locked_until = now + (self.backoff_delay * (2 ** (self.failed_attempts - 1)))
-                locked = True
-
-            return {
-                "success": False,
-                "message": "Invalid username or password.",
-                "locked": locked,
-                "latency_sec": time.time() - start_time
-            }
-
+    def login(self, username: str, password: str):
+        return self.auth.login(
+            username=username,
+            password=password
+        )
 
 def main():
-    parser = argparse.ArgumentParser(description="CS2413 Team 9 Master Security Evaluation Suite (Jennifer Cruza)")
-    parser.add_argument("--mode", choices=["inspect", "dictionary", "brute_force", "all"], default="all",
-                        help="Execution mode: inspect JSON, run dictionary attack, brute force, or all.")
-    parser.add_argument("--target-user", default="alice", help="Target username for attack testing.")
-    parser.add_argument("--wordlist", default=None, help="Path to external wordlist file (e.g. RockYou subset).")
-    parser.add_argument("--max-attempts", type=int, default=20, help="Maximum attack attempts permitted.")
-    parser.add_argument("--json-file", default="data/users.json", help="Path to database JSON file.")
-    parser.add_argument("--defense-mode", choices=["unprotected", "fixed_lockout", "exponential_backoff"],
-                        default="fixed_lockout", help="Simulated defense configuration.")
+    parser = argparse.ArgumentParser(
+        description="CS2413 Team 9 Master Security Evaluation Suite"
+    )
+
+    parser.add_argument(
+        "--mode",
+        choices=["inspect", "dictionary", "brute_force", "all"],
+        default="all"
+    )
+
+    parser.add_argument("--target-user", default="alice")
+    parser.add_argument("--wordlist", default=None)
+    parser.add_argument("--url", default= WORDLIST_URL)
+    parser.add_argument("--max-attempts", type=int, default=20)
+    parser.add_argument("--json-file", default="data/users.json")
 
     args = parser.parse_args()
 
-    simulator = TargetSystemSimulator(target_user=args.target_user, defense_mode=args.defense_mode)
+    print("\n" + "=" * 70)
+    print("  ATTACK SIMULATOR - REAL AUTHENTICATION")
+    print("=" * 70)
 
-    print("\n======================================================================")
-    print("  ATTACK SIMULATOR - SECURITY EVALUATION ")
-    print("======================================================================")
+    # use the project's data directory.
+    settings = Settings(
+        data_dir=REPO_ROOT / "data"
+    )
 
-    if args.mode in ["inspect", "all"]:
-        inspect_json_storage(args.json_file)
+    print(f"[*] User database: {settings.users_path}")
+    print(f"[*] Integrity key: {settings.integrity_key_path}")
 
-    if args.mode in ["dictionary", "all"]:
-        run_dictionary_attack(simulator.login, target_user=args.target_user,
-                             max_attempts=args.max_attempts)
+    runtime = None
 
-    if args.mode in ["brute_force", "all"]:
-        run_brute_force_attack(simulator.login, target_user=args.target_user, max_attempts=10)
+    try:
+        # init real auth system
+        runtime = build_runtime(
+            settings=settings,
+            backend="json"
+        )
+
+        simulator = TargetSystemSimulator(runtime.auth)
+
+        print("[+] Real authentication system connected!")
+
+        if args.mode in ["inspect", "all"]:
+            inspect_json_storage(
+                str(settings.users_path)
+            )
+
+        if args.mode in ["dictionary", "all"]:
+            run_dictionary_attack(
+                simulator.login,
+                target_user=args.target_user,
+                wordlist_path=args.wordlist,
+                remote_url = args.url,
+                max_attempts=args.max_attempts
+            )
+
+        if args.mode in ["brute_force", "all"]:
+            run_brute_force_attack(
+                simulator.login,
+                target_user=args.target_user,
+                max_attempts=args.max_attempts
+            )
+
+    except Exception as error:
+        print(f"\n[!] Simulator error: {error}")
+        raise
+
+    finally:
+        if runtime is not None:
+            runtime.close()
+            print("\n[*] Authentication runtime closed.")
 
 
 if __name__ == "__main__":

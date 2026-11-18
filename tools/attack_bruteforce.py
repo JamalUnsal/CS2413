@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Experiment 5: Automated Brute-Force Attack Simulation (attack_bruteforce.py)
-CS2413 - Team 9 Password Authentication System Security Design
-Author/Lead: Jennifer Cruza (Assisted by Jamal Unsal)
+Experiment 5: Automated Brute-Force Attack Simulation
+
+Author/Lead: Jennifer Cruza
 
 Description:
 Automated brute-force attack tool. Iterates through generated character combinations 
@@ -53,7 +53,7 @@ def run_brute_force_attack(login_func: Callable[[str, str], Any],
     print(f"  EXPERIMENT 5: AUTOMATED BRUTE-FORCE ATTACK SIMULATION (Target: '{target_user}')")
     print("="*70)
 
-    charset = string.ascii_lowercase + string.digits
+    charset = string.ascii_lowercase + string.ascii_uppercase + string.digits
     print(f"[*] Generating brute-force candidates from charset (a-z, 0-9) up to {max_attempts} attempts...\n")
 
     attempts = 0
@@ -61,6 +61,7 @@ def run_brute_force_attack(login_func: Callable[[str, str], Any],
     lockout_occurred = False
     start_time = time.time()
 
+    #generate candidate strings
     def generate_candidates():
         for length in range(1, max_length + 1):
             for combo in itertools.product(charset, repeat=length):
@@ -105,68 +106,38 @@ def run_brute_force_attack(login_func: Callable[[str, str], Any],
     }
 
 
+
 def main():
-    parser = argparse.ArgumentParser(description="Experiment 5 Brute-Force Attack Tool (Jennifer Cruza)")
-    parser.add_argument("--target-user", default="alice", help="Target username for attack testing.")
-    parser.add_argument("--max-length", type=int, default=4, help="Maximum password length for combination sweep.")
-    parser.add_argument("--max-attempts", type=int, default=50, help="Maximum attack attempts allowed.")
+    parser = argparse.ArgumentParser(
+        description="Experiment 5 Brute-Force Attack Tool (Jennifer Cruza)"
+    )
+    parser.add_argument("--target-user", default="alice", help="Target username for attack testing")
+    parser.add_argument("--max-length", type=int, default=4, help="Maximum password length for combination sweep")
+    parser.add_argument("--max-attempts", type=int, default=50, help="Maximum attack attempts allowed")
     args = parser.parse_args()
 
-    login_fn = None
+    # Connect to the actual authentication system
+    from auth_system.runtime import build_runtime
+    from auth_system.config import Settings
+
+    settings = Settings(data_dir=PROJECT_ROOT / "data")
+
+    runtime = build_runtime(
+        settings=settings,
+        backend="json"
+    )
+
+    login_fn = runtime.auth.login
 
     try:
-        from auth_system.auth import AuthService
-        print("[*] Detected live auth_system.auth.AuthService!")
-        try:
-            from auth_system.storage.memory import MemoryStorageBackend
-            from auth_system.sessions import SessionManager
-            from auth_system.mfa import MfaService
-            from auth_system.lockout import AccountLockoutPolicy
-            from auth_system.audit import AuditLog
-            from auth_system.config import Settings
-
-            storage = MemoryStorageBackend()
-            auth_svc = AuthService(
-                storage=storage,
-                sessions=SessionManager(),
-                mfa=MfaService(),
-                lockout=AccountLockoutPolicy(),
-                audit=AuditLog(),
-                settings=Settings()
-            )
-            login_fn = auth_svc.login
-        except Exception:
-            pass
-    except ImportError:
-        pass
-
-    if login_fn is None:
-        try:
-            from auth_system.auth import login as live_login
-            login_fn = live_login
-        except ImportError:
-            try:
-                from auth_system.verification import login as live_login
-                login_fn = live_login
-            except ImportError:
-                print("[!] Live auth module not detected on sys.path; running with stateful Mock backend.")
-
-                class StatefulMockBackend:
-                    def __init__(self, lockout_threshold: int = 5):
-                        self.attempts = 0
-                        self.threshold = lockout_threshold
-
-                    def login(self, username: str, password: str) -> dict[str, Any]:
-                        self.attempts += 1
-                        if self.attempts >= self.threshold:
-                            return {"success": False, "message": "Account locked out.", "locked": True, "reason": "locked_out"}
-                        return {"success": False, "message": "Invalid password.", "locked": False, "reason": "bad_password"}
-
-                mock_backend = StatefulMockBackend(lockout_threshold=5)
-                login_fn = mock_backend.login
-
-    run_brute_force_attack(login_fn, target_user=args.target_user,
-                           max_length=args.max_length, max_attempts=args.max_attempts)
+        run_brute_force_attack(
+            login_fn,
+            target_user=args.target_user,
+            max_length=args.max_length,
+            max_attempts=args.max_attempts
+        )
+    finally:
+        runtime.close()
 
 
 if __name__ == "__main__":
