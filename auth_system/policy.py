@@ -60,7 +60,7 @@ class PasswordPolicy:
         return self.blocklist
     
     def strength(self, password: str) -> PolicyResult:
-        report = zxcvbn(password) 
+        report = zxcvbn(password[:72]) # zxcvbn max is 72, otherwise it causes an error
         notes = report["feedback"]
         hints = tuple(item for item in [notes.get("warning"), *notes.get("suggestions", [])] if item)
         return PolicyResult(
