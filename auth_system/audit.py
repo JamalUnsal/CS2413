@@ -2,6 +2,8 @@
 
 OWNER: Jamal Unsal (account lockout, rate limiting, audit logging).
 
+STATUS: did AuditLog
+
 `AuditLog` is the integration point the rest of the system already calls.  The
 file-backed implementation is still a placeholder: Jamal must decide the format
 (one JSON object per line is suggested), rotation, and retention.
@@ -77,9 +79,51 @@ class AuditLog:
         username: str | None = None,
         details: Mapping[str, Any] | None = None,
     ) -> None:
-        raise NotImplementedError(
-            "Audit logging is not implemented yet."
-        )
+        import json
+        import sys
+
+        def redact(value: Any) -> Any:
+            if isinstance(value, Mapping):
+                safe = {}
+                for key, item in value.items():
+                    key_text = str(key).lower()
+                    sensitive = (
+                        "password", "passwd", "otp", "token",
+                        "secret", "credential", "hash",
+                    )
+                    safe[str(key)] = (
+                        "[REDACTED]"
+                        if any(word in key_text for word in sensitive)
+                        else redact(item)
+                    )
+                return safe
+
+            if isinstance(value, (list, tuple)):
+                return [redact(item) for item in value]
+
+            return value
+
+        entry = {
+            "event": str(event),
+            "username": username,
+            "details": redact(dict(details or {})),
+            "recorded_at": time.time(),
+        }
+
+        try:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+
+            with self.path.open("a", encoding="utf-8") as log_file:
+                log_file.write(json.dumps(entry, default=str) + "\n")
+                log_file.flush()
+
+        except Exception as exc:
+            print(f"Audit log write failed: {exc}", file=sys.stderr)
+
+
+
+
+
 
 
 class NullAuditLog(AuditLog):
