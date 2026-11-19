@@ -54,8 +54,6 @@ def hash_password(password: str, rounds: int = 12) -> str:
 
 def needs_rehash(stored_hash: str, rounds: int) -> bool:
     parts = stored_hash.split("$")
-    if len(parts) != 4:
-        return True
-    return int(parts[2]) < rounds
+    return len(parts) != 4 or int(parts[2]) < rounds
 
    
