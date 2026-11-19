@@ -53,7 +53,9 @@ def build_runtime(
 
     # NOTE: the file-backed AuditLog is Jamal's placeholder; the null logger
     # keeps the rest of the system runnable in the meantime.
-    audit = audit or NullAuditLog()
+
+    #updated audit
+    audit = audit or AuditLog(settings.audit_log_path)
 
     storage = create_storage(backend, settings, audit=audit)
     sessions = SessionManager(
@@ -62,7 +64,13 @@ def build_runtime(
         clock=clock,
     )
     mfa = MfaService(settings, clock=clock)
-    lockout = lockout or NoLockoutPolicy()
+    #updated lockout
+    lockout = lockout or ExponentialBackoffPolicy(
+    threshold=settings.lockout_threshold,
+    base_seconds=settings.backoff_base_seconds,
+    max_seconds=settings.backoff_max_seconds,
+)
+    
     policy = PasswordPolicy(settings)
 
     return Runtime(
