@@ -2,10 +2,7 @@
 
 OWNER: Jamal Unsal (Experiments 5 and 6).
 
-STATUS: placeholders - the two graded strategies raise ``NotImplementedError``.
-``NoLockoutPolicy`` is a temporary stand-in so login works before Jamal lands
-his module; it is deliberately named "none" in reports so it cannot be mistaken
-for a defense.
+STATUS: Implemented
 
 The login service only uses these three methods, so implementing them is the
 whole integration:
@@ -35,6 +32,7 @@ Do the arithmetic against the injected ``now`` so Experiments 5/6 can simulate
 time without sleeping.
 """
 
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -55,38 +53,61 @@ class LockoutPolicy(ABC):
 
     @abstractmethod
     def check(self, user: UserRecord, now: float) -> LockoutDecision:
-        """Is this attempt currently allowed?"""
+        """Check whether a login attempt is currently allowed."""
 
     @abstractmethod
     def register_failure(self, user: UserRecord, now: float) -> LockoutDecision:
-        """Record one failed attempt and return the new decision."""
+        """Record a failed login attempt."""
 
     @abstractmethod
     def reset(self, user: UserRecord, now: float) -> None:
-        """Clear failure state after a successful login."""
+        """Clear the failed-login state after successful authentication."""
 
 
 class FixedLockoutPolicy(LockoutPolicy):
-    """TODO(Jamal Unsal): fixed lockout after N failures."""
+    """Lock an account for a fixed period after the threshold is reached."""
 
     name = "fixed"
 
     def __init__(self, threshold: int = 5, lockout_seconds: int = 300) -> None:
+        if threshold < 1:
+            raise ValueError("threshold must be at least 1")
+        if lockout_seconds <= 0:
+            raise ValueError("lockout_seconds must be positive")
+
         self.threshold = threshold
         self.lockout_seconds = lockout_seconds
 
     def check(self, user: UserRecord, now: float) -> LockoutDecision:
-        raise NotImplementedError("Fixed lockout is not implemented yet.")
+        if user.lockout_until is not None and user.lockout_until > now:
+            return LockoutDecision(
+                allowed=False,
+                retry_after=user.lockout_until - now,
+                locked=True,
+            )
+
+        return LockoutDecision(allowed=True)
 
     def register_failure(self, user: UserRecord, now: float) -> LockoutDecision:
-        raise NotImplementedError("Fixed lockout is not implemented yet.")
+        user.failed_attempts += 1
+
+        if user.failed_attempts >= self.threshold:
+            user.lockout_until = now + self.lockout_seconds
+            return LockoutDecision(
+                allowed=False,
+                retry_after=float(self.lockout_seconds),
+                locked=True,
+            )
+
+        return LockoutDecision(allowed=True)
 
     def reset(self, user: UserRecord, now: float) -> None:
-        raise NotImplementedError("Fixed lockout is not implemented yet.")
+        user.failed_attempts = 0
+        user.lockout_until = None
 
 
 class ExponentialBackoffPolicy(LockoutPolicy):
-    """TODO(Jamal Unsal): timed lockout with exponential backoff."""
+    """Apply increasingly long timed lockouts after repeated failures."""
 
     name = "backoff"
 
@@ -96,28 +117,53 @@ class ExponentialBackoffPolicy(LockoutPolicy):
         base_seconds: int = 30,
         max_seconds: int = 3600,
     ) -> None:
+        if threshold < 1:
+            raise ValueError("threshold must be at least 1")
+        if base_seconds <= 0:
+            raise ValueError("base_seconds must be positive")
+        if max_seconds < base_seconds:
+            raise ValueError("max_seconds must be at least base_seconds")
+
         self.threshold = threshold
         self.base_seconds = base_seconds
         self.max_seconds = max_seconds
 
     def check(self, user: UserRecord, now: float) -> LockoutDecision:
-        raise NotImplementedError("Exponential backoff is not implemented yet.")
+        if user.lockout_until is not None and user.lockout_until > now:
+            return LockoutDecision(
+                allowed=False,
+                retry_after=user.lockout_until - now,
+                locked=True,
+            )
+
+        return LockoutDecision(allowed=True)
 
     def register_failure(self, user: UserRecord, now: float) -> LockoutDecision:
-        raise NotImplementedError("Exponential backoff is not implemented yet.")
+        user.failed_attempts += 1
+
+        if user.failed_attempts >= self.threshold:
+            exponent = user.failed_attempts - self.threshold
+            delay = min(
+                self.base_seconds * (2 ** exponent),
+                self.max_seconds,
+            )
+            user.lockout_until = now + delay
+
+            return LockoutDecision(
+                allowed=False,
+                retry_after=float(delay),
+                locked=True,
+            )
+
+        return LockoutDecision(allowed=True)
 
     def reset(self, user: UserRecord, now: float) -> None:
-        raise NotImplementedError("Exponential backoff is not implemented yet.")
+        user.failed_attempts = 0
+        user.lockout_until = None
 
 
 class NoLockoutPolicy(LockoutPolicy):
-    """TEMPORARY stand-in: every attempt is allowed, no state is written.
-
-    Exists only so the login/MFA/session work can be exercised before Jamal's
-    strategies are implemented.  Replace with ``FixedLockoutPolicy`` or
-    ``ExponentialBackoffPolicy`` in ``auth_system.runtime.build_runtime`` once
-    they are ready.
-    """
+    """Temporary test strategy that does not apply lockout."""
 
     name = "none"
 
