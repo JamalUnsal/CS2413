@@ -15,12 +15,18 @@ from auth_system.audit import AuditLog, NullAuditLog
 from auth_system.auth import AuthService
 from auth_system.config import Settings
 from auth_system.credentials import CredentialManager
-from auth_system.lockout import LockoutPolicy, NoLockoutPolicy
+
 from auth_system.mfa import MfaService
 from auth_system.policy import PasswordPolicy
 from auth_system.registration import RegistrationService
 from auth_system.sessions import SessionManager
 from auth_system.storage import StorageBackend, create_storage
+
+from auth_system.lockout import (
+    ExponentialBackoffPolicy,
+    LockoutPolicy,
+    NoLockoutPolicy,
+)
 
 
 @dataclass
