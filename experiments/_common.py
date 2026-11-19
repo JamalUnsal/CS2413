@@ -13,6 +13,8 @@ from auth_system.config import Settings
 from auth_system.models import UserRecord
 from auth_system.runtime import Runtime, build_runtime
 
+from auth_system.lockout import NoLockoutPolicy
+
 
 class ExperimentClock:
     """Controllable clock so time-based behaviour can be tested without sleeps."""
@@ -52,7 +54,7 @@ def make_runtime(
 ) -> Runtime:
     settings = make_settings(directory, **overrides)
     audit_log = audit if audit is not None else InMemoryAuditLog(clock=clock)
-    return build_runtime(settings, backend=backend, audit=audit_log, clock=clock)
+    return build_runtime(settings, backend=backend, audit=audit_log, lockout=NoLockoutPolicy(), clock=clock)
 
 
 def seed(
