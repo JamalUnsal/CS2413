@@ -11,6 +11,8 @@ from auth_system.config import Settings
 from auth_system.runtime import Runtime, build_runtime
 from tests.support import FakeClock
 
+from auth_system.lockout import NoLockoutPolicy
+
 
 @pytest.fixture
 def clock() -> FakeClock:
@@ -38,7 +40,12 @@ def audit(clock: FakeClock) -> InMemoryAuditLog:
 
 @pytest.fixture
 def runtime(settings: Settings, clock: FakeClock, audit: InMemoryAuditLog) -> Runtime:
-    instance = build_runtime(settings, audit=audit, clock=clock)
+    instance = build_runtime(
+        settings,
+        audit=audit,
+        lockout=NoLockoutPolicy(),
+        clock=clock,
+    )
     try:
         yield instance
     finally:
