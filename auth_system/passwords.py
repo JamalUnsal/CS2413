@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import bcrypt
 
 
 def prepare_password(password: str) -> bytes:
@@ -43,21 +44,18 @@ def prepare_password(password: str) -> bytes:
 
 
 def hash_password(password: str, rounds: int = 12) -> str:
-    """Return a salted bcrypt hash for ``password``.
 
-    TODO(Hazem Alfeky): implement with ``bcrypt.hashpw`` + ``bcrypt.gensalt``
-    using :func:`prepare_password` and validate ``4 <= rounds <= 31``.
-    """
-    raise NotImplementedError(
-        "Password hashing is not implemented yet."
-    )
-
+    if not (4<= rounds <= 31):
+        raise ValueError("rounds must be between 4 and 31")
+    return bcrypt.hashpw(
+        prepare_password(password), bcrypt.gensalt(rounds=rounds)
+    ).decode("ascii")
+   
 
 def needs_rehash(stored_hash: str, rounds: int) -> bool:
-    """Return True when ``stored_hash`` uses a weaker cost than ``rounds``.
+    parts = stored_hash.split("$")
+    if len(parts) != 4:
+        return True
+    return int(parts[2]) < rounds
 
-    TODO(Hazem Alfeky): parse the bcrypt cost field and compare it.
-    """
-    raise NotImplementedError(
-        "Re-hash detection is not implemented yet."
-    )
+   
