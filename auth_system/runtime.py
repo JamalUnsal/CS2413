@@ -15,12 +15,18 @@ from auth_system.audit import AuditLog, NullAuditLog
 from auth_system.auth import AuthService
 from auth_system.config import Settings
 from auth_system.credentials import CredentialManager
-from auth_system.lockout import LockoutPolicy, NoLockoutPolicy
+
 from auth_system.mfa import MfaService
 from auth_system.policy import PasswordPolicy
 from auth_system.registration import RegistrationService
 from auth_system.sessions import SessionManager
 from auth_system.storage import StorageBackend, create_storage
+
+from auth_system.lockout import (
+    ExponentialBackoffPolicy,
+    LockoutPolicy,
+    NoLockoutPolicy,
+)
 
 
 @dataclass
@@ -53,7 +59,9 @@ def build_runtime(
 
     # NOTE: the file-backed AuditLog is Jamal's placeholder; the null logger
     # keeps the rest of the system runnable in the meantime.
-    audit = audit or NullAuditLog()
+
+    #updated audit
+    audit = audit or AuditLog(settings.audit_log_path)
 
     storage = create_storage(backend, settings, audit=audit)
     sessions = SessionManager(
@@ -62,7 +70,13 @@ def build_runtime(
         clock=clock,
     )
     mfa = MfaService(settings, clock=clock)
-    lockout = lockout or NoLockoutPolicy()
+    #updated lockout
+    lockout = lockout or ExponentialBackoffPolicy(
+    threshold=settings.lockout_threshold,
+    base_seconds=settings.backoff_base_seconds,
+    max_seconds=settings.backoff_max_seconds,
+)
+    
     policy = PasswordPolicy(settings)
 
     return Runtime(
