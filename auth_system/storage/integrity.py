@@ -1,18 +1,10 @@
 """HMAC integrity protection for stored credential data.
-
-OWNER: Shalom Olorunfemi.
-
-Design (proposal Section 5.2 / threat T6):
   * A 32-byte key is created once and stored OUTSIDE the credential file.
   * The keyed digest covers the canonical JSON encoding of the whole user
     payload (schema version + users), so *any* change is detected: swapping a
     hash, resetting a failed-attempt counter, deleting a lockout, injecting or
     removing a user.
   * Verification uses ``hmac.compare_digest`` (constant time).
-
-Limitations (documented in the report): a local attacker who can read the key
-file can forge the digest.  In production the key belongs in an OS keyring, a
-KMS, or an environment-injected secret - not next to the data.
 """
 
 from __future__ import annotations
