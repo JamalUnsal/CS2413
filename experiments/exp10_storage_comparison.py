@@ -1,19 +1,6 @@
 """Experiment 10 - Storage backend comparison (JSON vs SQLite).
 
 OWNER: Shalom Olorunfemi.
-
-Procedure
----------
-For 1,000 synthetic accounts (fixed test hash; hashing is Experiment 2's cost,
-not this experiment's variable):
-  * measure bulk insert, single-record read and full-list read time;
-  * run the same login through the authentication service (proves the
-    authentication logic is unchanged by the backend);
-  * hammer the backend from 8 threads, 20 updates each, and count errors;
-  * directly tamper with one stored record and confirm detection;
-  * report re-open behaviour and on-disk size.
-
-Run: ``python -m experiments.exp10_storage_comparison [--users N]``
 """
 
 from __future__ import annotations
