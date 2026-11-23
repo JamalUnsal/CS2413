@@ -1,21 +1,7 @@
 """Experiment 7 - TOTP multi-factor authentication.
 
-OWNER: Sandeep Singh.
+OWNER: Shalom Olorunfemi
 
-Procedure
----------
-1. Seed an account, log in (password only), enroll TOTP and confirm with a
-   valid code so MFA is enabled.
-2. Attempt logins with: correct password + missing code, + an invalid code,
-   + an expired code (previous time step), + a valid code.
-3. Attempt to brute-force the second factor with repeated wrong codes and
-   confirm the attempt limiter engages and no session is ever issued.
-4. Advance the clock past the MFA cooldown and confirm a valid code works.
-
-Pass criteria: no login succeeds without a valid current code, expired codes are
-rejected, and the second factor cannot be bypassed by guessing.
-
-Run: ``python -m experiments.exp07_mfa``
 """
 
 from __future__ import annotations
