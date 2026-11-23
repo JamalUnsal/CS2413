@@ -1,29 +1,3 @@
-"""Password hashing.
-
-OWNER: Hazem Alfeky ("initial bcrypt hashing setup", Experiment 2).
-
-STATUS: placeholder - ``hash_password`` must still be implemented.
-
-Integration contract
----------------------
-Hashing and verification must use the same input encoding.  bcrypt only reads
-the first 72 bytes of its input, which silently truncates long passphrases and
-is a known footgun.  The shared helper :func:`prepare_password` pre-hashes the
-UTF-8 password with SHA-256 and base64-encodes the digest (44 bytes), so the
-full password always contributes to the hash.  ``auth_system.verification``
-(Sandeep) imports this helper; Hazem's implementation must use it too.
-
-Suggested implementation::
-
-    return bcrypt.hashpw(
-        prepare_password(password), bcrypt.gensalt(rounds=rounds)
-    ).decode("ascii")
-
-The salt is embedded in the bcrypt string, so ``UserRecord.salt`` stays empty
-for bcrypt.  The scheme identifier (``$2b$``) and work factor are also embedded,
-which makes ``needs_rehash`` possible.
-"""
-
 from __future__ import annotations
 
 import base64
