@@ -38,8 +38,9 @@ class AuditEntry:
 
 class AuditLog:
 
-    def __init__(self, path: str | Path) -> None:
-        self.path = Path(path)
+def __init__(self, path, clock=time.time):
+    self.path = Path(path)
+    self._clock = clock
 
     def record(
         self,
@@ -75,7 +76,7 @@ class AuditLog:
             "event": str(event),
             "username": username,
             "details": redact(dict(details or {})),
-            "recorded_at": time.time(),
+            "recorded_at": self._clock(),
         }
 
         try:
