@@ -1,0 +1,19 @@
+
+[Experiment 01] Launching Data Inspection on database: '/Users/jennifercruza/Documents/GitHub/CS2413/data/users.json'
+
+======================================================================
+  EXPERIMENT 1: JSON CREDENTIAL DATA INSPECTION (CONFIDENTIALITY)
+======================================================================
+[*] Loaded database containing 3 user account(s).
+
+  - User: alice        | Hash Prefix: $2b$12$wtUug.0d... | Status: PASS (Valid salted hash)
+  - User: bob          | Hash Prefix: $2b$12$/kdPxi8Z... | Status: PASS (Valid salted hash)
+  - User: carol        | Hash Prefix: $2b$12$pWNPVhy9... | Status: PASS (Valid salted hash)
+----------------------------------------------------------------------
+EXPERIMENT 1 RESULTS SUMMARY:
+  • Total User Accounts Inspected : 3
+  • Plaintext Passwords Found     : 0 (Target: 0)
+  • Identical Hash Collisions     : 0 (Target: 0 - Unique per-user salts)
+  • Overall Inspection Verdict    : PASSED [SUCCESS]
+======================================================================
+

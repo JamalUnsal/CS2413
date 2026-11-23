@@ -18,7 +18,7 @@ Protocol: enroll TOTP, then attempt logins with missing/invalid/expired/valid co
 +---------------------------------------------+--------+----------------------------------------------------------------------------------------------------------------+
 | password-only login works before enrollment | PASS   |                                                                                                                |
 | MFA enrollment starts                       | PASS   |                                                                                                                |
-| provisioning URI is otpauth/TOTP            | PASS   | otpauth://totp/Team9-AuthPrototype:mfa-user?secret=NWXJ3YCPQOVPK3OJHIQMA7MIW5Z3Y335&issuer=Team9-AuthPrototype |
+| provisioning URI is otpauth/TOTP            | PASS   | otpauth://totp/Team9-AuthPrototype:mfa-user?secret=Z6TLAQPKEOXXLASOB4RVB5EY2L5RKTRY&issuer=Team9-AuthPrototype |
 | provisioning URI carries the issuer         | PASS   |                                                                                                                |
 | provisioning URI carries the username       | PASS   |                                                                                                                |
 | valid code enables MFA                      | PASS   | Multi-factor authentication is now enabled.                                                                    |

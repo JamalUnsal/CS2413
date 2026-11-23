@@ -1,12 +1,12 @@
 +-------------+---------------------+----------+----------------+--------------+---------+----------+
 | Attack      | Protection          | Attempts | Password found | Final reason | Time    | Lockouts |
 +-------------+---------------------+----------+----------------+--------------+---------+----------+
-| Brute-force | No protection       | 4        | Yes            | None         | 4.54 ms | 0        |
-| Brute-force | Fixed lockout       | 4        | No             | locked_out   | 3.63 ms | 1        |
-| Brute-force | Exponential backoff | 4        | No             | locked_out   | 3.38 ms | 1        |
-| Dictionary  | No protection       | 4        | Yes            | None         | 4.52 ms | 0        |
-| Dictionary  | Fixed lockout       | 4        | No             | locked_out   | 3.26 ms | 1        |
-| Dictionary  | Exponential backoff | 4        | No             | locked_out   | 3.39 ms | 1        |
+| Brute-force | No protection       | 4        | Yes            | None         | 4.61 ms | 0        |
+| Brute-force | Fixed lockout       | 4        | No             | locked_out   | 3.27 ms | 1        |
+| Brute-force | Exponential backoff | 4        | No             | locked_out   | 3.31 ms | 1        |
+| Dictionary  | No protection       | 4        | Yes            | None         | 4.31 ms | 0        |
+| Dictionary  | Fixed lockout       | 4        | No             | locked_out   | 3.24 ms | 1        |
+| Dictionary  | Exponential backoff | 4        | No             | locked_out   | 3.35 ms | 1        |
 +-------------+---------------------+----------+----------------+--------------+---------+----------+
 Experiment 5 - Online brute-force and dictionary attack
 =======================================================

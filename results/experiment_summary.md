@@ -1,26 +1,26 @@
 # CS2413 Project - Experiment and Test Results
 
-Generated (UTC): 2026-11-23T22:13:31.046257+00:00
+Generated (UTC): 2026-11-23T23:12:10.883313+00:00
 
 ## Experiment execution summary
 
 | Experiment | Result | Runtime (s) | Log |
 |---|---:|---:|---|
-| Experiment 1 - Credential data inspection | **SKIPPED** | 0 | — |
-| Experiment 2 - Hashing comparison | **PASS** | 43.927 | `results/logs/exp02_hashing_comparison.log` |
-| Experiment 3 - Password verification | **PASS** | 0.138 | `results/logs/exp03_password_verification.log` |
-| Experiment 4 - Password policy validation | **PASS** | 0.083 | `results/logs/exp04_policy_validation.log` |
-| Experiment 5 - Online attack simulation | **PASS** | 0.093 | `results/logs/exp05_online_attack.log` |
-| Experiment 6 - Lockout abuse and availability | **PASS** | 0.076 | `results/logs/exp06_lockout_abuse.log` |
-| Experiment 7 - Multi-factor authentication | **PASS** | 0.077 | `results/logs/exp07_mfa.log` |
-| Experiment 8 - Integrity and tampering | **PASS** | 0.078 | `results/logs/exp08_integrity_tampering.log` |
-| Experiment 9 - Session security | **PASS** | 0.067 | `results/logs/exp09_sessions.log` |
-| Experiment 10 - Storage comparison | **PASS** | 4.983 | `results/logs/exp10_storage_comparison.log` |
+| Experiment 1 - Credential data inspection | **PASS** | 0.089 | `results/logs/exp01_data_inspection.log` |
+| Experiment 2 - Hashing comparison | **PASS** | 44.052 | `results/logs/exp02_hashing_comparison.log` |
+| Experiment 3 - Password verification | **PASS** | 0.111 | `results/logs/exp03_password_verification.log` |
+| Experiment 4 - Password policy validation | **PASS** | 0.081 | `results/logs/exp04_policy_validation.log` |
+| Experiment 5 - Online attack simulation | **PASS** | 0.098 | `results/logs/exp05_online_attack.log` |
+| Experiment 6 - Lockout abuse and availability | **PASS** | 0.075 | `results/logs/exp06_lockout_abuse.log` |
+| Experiment 7 - Multi-factor authentication | **PASS** | 0.078 | `results/logs/exp07_mfa.log` |
+| Experiment 8 - Integrity and tampering | **PASS** | 0.077 | `results/logs/exp08_integrity_tampering.log` |
+| Experiment 9 - Session security | **PASS** | 0.065 | `results/logs/exp09_sessions.log` |
+| Experiment 10 - Storage comparison | **PASS** | 5.251 | `results/logs/exp10_storage_comparison.log` |
 
 ## Automated tests
 
 - **Result:** PASS
-- **Runtime:** 2.44 seconds
+- **Runtime:** 2.754 seconds
 - **Log:** `results/logs/pytest.log`
 
 ## Generated graphs

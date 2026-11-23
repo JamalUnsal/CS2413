@@ -1,23 +1,29 @@
 {
-  "generated_at_utc": "2026-11-23T22:13:31.046257+00:00",
+  "generated_at_utc": "2026-11-23T23:12:10.883313+00:00",
   "repository": "/Users/jennifercruza/Documents/GitHub/CS2413",
   "experiments": [
     {
-      "status": "SKIPPED",
-      "return_code": null,
-      "elapsed_seconds": 0,
-      "command": [],
-      "log": "",
-      "error": "Pass --credential-file with an existing real credential JSON file.",
+      "status": "PASS",
+      "return_code": 0,
+      "elapsed_seconds": 0.089,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
+        "-m",
+        "experiments.exp01_data_inspection",
+        "--json-file",
+        "/Users/jennifercruza/Documents/GitHub/CS2413/data/users.json"
+      ],
+      "log": "results/logs/exp01_data_inspection.log",
+      "error": "",
       "experiment": "exp01_data_inspection",
       "title": "Experiment 1 - Credential data inspection"
     },
     {
       "status": "PASS",
       "return_code": 0,
-      "elapsed_seconds": 43.927,
+      "elapsed_seconds": 44.052,
       "command": [
-        "/usr/local/bin/python3",
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
         "-m",
         "experiments.exp02_hashing_comparison"
       ],
@@ -29,9 +35,9 @@
     {
       "status": "PASS",
       "return_code": 0,
-      "elapsed_seconds": 0.138,
+      "elapsed_seconds": 0.111,
       "command": [
-        "/usr/local/bin/python3",
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
         "-m",
         "experiments.exp03_password_verification"
       ],
@@ -43,9 +49,9 @@
     {
       "status": "PASS",
       "return_code": 0,
-      "elapsed_seconds": 0.083,
+      "elapsed_seconds": 0.081,
       "command": [
-        "/usr/local/bin/python3",
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
         "-m",
         "experiments.exp04_policy_validation"
       ],
@@ -57,9 +63,9 @@
     {
       "status": "PASS",
       "return_code": 0,
-      "elapsed_seconds": 0.093,
+      "elapsed_seconds": 0.098,
       "command": [
-        "/usr/local/bin/python3",
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
         "-m",
         "experiments.exp05_online_attack"
       ],
@@ -71,9 +77,9 @@
     {
       "status": "PASS",
       "return_code": 0,
-      "elapsed_seconds": 0.076,
+      "elapsed_seconds": 0.075,
       "command": [
-        "/usr/local/bin/python3",
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
         "-m",
         "experiments.exp06_lockout_abuse"
       ],
@@ -85,9 +91,9 @@
     {
       "status": "PASS",
       "return_code": 0,
-      "elapsed_seconds": 0.077,
+      "elapsed_seconds": 0.078,
       "command": [
-        "/usr/local/bin/python3",
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
         "-m",
         "experiments.exp07_mfa"
       ],
@@ -99,9 +105,9 @@
     {
       "status": "PASS",
       "return_code": 0,
-      "elapsed_seconds": 0.078,
+      "elapsed_seconds": 0.077,
       "command": [
-        "/usr/local/bin/python3",
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
         "-m",
         "experiments.exp08_integrity_tampering"
       ],
@@ -113,9 +119,9 @@
     {
       "status": "PASS",
       "return_code": 0,
-      "elapsed_seconds": 0.067,
+      "elapsed_seconds": 0.065,
       "command": [
-        "/usr/local/bin/python3",
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
         "-m",
         "experiments.exp09_sessions"
       ],
@@ -127,9 +133,9 @@
     {
       "status": "PASS",
       "return_code": 0,
-      "elapsed_seconds": 4.983,
+      "elapsed_seconds": 5.251,
       "command": [
-        "/usr/local/bin/python3",
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
         "-m",
         "experiments.exp10_storage_comparison"
       ],
@@ -142,9 +148,9 @@
   "automated_tests": {
     "status": "PASS",
     "return_code": 0,
-    "elapsed_seconds": 2.44,
+    "elapsed_seconds": 2.754,
     "command": [
-      "/usr/local/bin/python3",
+      "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
       "-m",
       "pytest",
       "-q"
