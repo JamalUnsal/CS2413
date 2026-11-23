@@ -1,4 +1,4 @@
-"""Unit tests for bcrypt verification (owner: Sandeep Singh)."""
+"""Unit tests for bcrypt verification."""
 
 from __future__ import annotations
 
