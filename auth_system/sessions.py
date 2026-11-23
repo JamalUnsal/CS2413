@@ -1,7 +1,4 @@
 """Session tokens.
-
-OWNER: Sandeep Singh (Experiment 9).
-
 Properties:
   * tokens come from ``secrets.token_urlsafe`` (CSPRNG, 256 bits by default);
   * only the SHA-256 fingerprint is kept in memory, so a memory dump of the
@@ -9,9 +6,6 @@ Properties:
   * every session has an absolute expiry (no sliding renewal by default);
   * logout invalidates immediately, and ``invalidate_all`` supports password
     change/reset (Shalom's module calls it).
-
-Sessions are intentionally in-memory: the prototype restarts log everyone out,
-which is safe.  Persisting them is future work and must keep tokens hashed.
 """
 
 from __future__ import annotations
