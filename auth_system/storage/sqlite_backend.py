@@ -1,7 +1,4 @@
 """SQLite storage backend behind the same interface as the JSON backend.
-
-OWNER: Shalom Olorunfemi (Experiment 10).
-
 Integrity design:
   * each row stores the canonical JSON record plus its own HMAC-SHA256
     signature (same key file as the JSON backend);
