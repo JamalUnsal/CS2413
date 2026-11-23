@@ -6,12 +6,7 @@ import bcrypt
 
 
 def prepare_password(password: str) -> bytes:
-    """Normalise a password for bcrypt (shared hashing/verification contract).
 
-    This is implemented here, in the hashing module, because both the hasher
-    (Hazem) and the verifier (Sandeep) must agree on it.  Changing the scheme
-    later requires re-hashing users, so treat it as a storage-format decision.
-    """
     if not isinstance(password, str):
         raise TypeError("password must be a string")
     return base64.b64encode(hashlib.sha256(password.encode("utf-8")).digest())
