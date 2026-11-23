@@ -54,13 +54,27 @@ class FixedLockoutPolicy(LockoutPolicy):
         return LockoutDecision(allowed=True)
 
     def register_failure(self, user: UserRecord, now: float) -> LockoutDecision:
+        existing_lockout = self.check(user, now)
+
+        if not existing_lockout.allowed:
+            return existing_lockout
+
         user.failed_attempts += 1
 
         if user.failed_attempts >= self.threshold:
-            user.lockout_until = now + self.lockout_seconds
+            exponent = user.failed_attempts - self.threshold
+
+            delay = self.base_seconds
+            for _ in range(exponent):
+                delay = min(delay * 2, self.max_seconds)
+                if delay >= self.max_seconds:
+                    break
+
+            user.lockout_until = now + delay
+
             return LockoutDecision(
                 allowed=False,
-                retry_after=float(self.lockout_seconds),
+                retry_after=float(delay),
                 locked=True,
             )
 
