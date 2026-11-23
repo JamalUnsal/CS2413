@@ -1,7 +1,5 @@
 """TOTP-based multi-factor authentication.
 
-OWNER: Sandeep Singh (Experiment 7).
-
 Uses ``pyotp`` for RFC 6238 TOTP and returns an ``otpauth://`` provisioning URI
 that any authenticator app can import (or render as a QR code).  Code-attempt
 limiting lives in :mod:`auth_system.auth`, where the user record is available.
