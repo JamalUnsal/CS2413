@@ -36,11 +36,12 @@ class AuditEntry:
     recorded_at: float = 0.0
 
 
+
 class AuditLog:
 
-def __init__(self, path, clock=time.time):
-    self.path = Path(path)
-    self._clock = clock
+    def __init__(self, path, clock=time.time):
+        self.path = Path(path)
+        self._clock = clock
 
     def record(
         self,
@@ -81,18 +82,12 @@ def __init__(self, path, clock=time.time):
 
         try:
             self.path.parent.mkdir(parents=True, exist_ok=True)
-
             with self.path.open("a", encoding="utf-8") as log_file:
                 log_file.write(json.dumps(entry, default=str) + "\n")
                 log_file.flush()
 
         except Exception as exc:
             print(f"Audit log write failed: {exc}", file=sys.stderr)
-
-
-
-
-
 
 
 class NullAuditLog(AuditLog):

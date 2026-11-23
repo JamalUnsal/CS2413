@@ -53,6 +53,7 @@ class FixedLockoutPolicy(LockoutPolicy):
 
         return LockoutDecision(allowed=True)
 
+    
     def register_failure(self, user: UserRecord, now: float) -> LockoutDecision:
         existing_lockout = self.check(user, now)
 
@@ -62,14 +63,7 @@ class FixedLockoutPolicy(LockoutPolicy):
         user.failed_attempts += 1
 
         if user.failed_attempts >= self.threshold:
-            exponent = user.failed_attempts - self.threshold
-
-            delay = self.base_seconds
-            for _ in range(exponent):
-                delay = min(delay * 2, self.max_seconds)
-                if delay >= self.max_seconds:
-                    break
-
+            delay = self.lockout_seconds
             user.lockout_until = now + delay
 
             return LockoutDecision(
@@ -79,6 +73,7 @@ class FixedLockoutPolicy(LockoutPolicy):
             )
 
         return LockoutDecision(allowed=True)
+
 
     def reset(self, user: UserRecord, now: float) -> None:
         user.failed_attempts = 0
@@ -117,15 +112,23 @@ class ExponentialBackoffPolicy(LockoutPolicy):
 
         return LockoutDecision(allowed=True)
 
+    
     def register_failure(self, user: UserRecord, now: float) -> LockoutDecision:
+        existing_lockout = self.check(user, now)
+
+        if not existing_lockout.allowed:
+            return existing_lockout
+
         user.failed_attempts += 1
 
         if user.failed_attempts >= self.threshold:
             exponent = user.failed_attempts - self.threshold
+
             delay = min(
                 self.base_seconds * (2 ** exponent),
                 self.max_seconds,
             )
+
             user.lockout_until = now + delay
 
             return LockoutDecision(
@@ -135,6 +138,7 @@ class ExponentialBackoffPolicy(LockoutPolicy):
             )
 
         return LockoutDecision(allowed=True)
+
 
     def reset(self, user: UserRecord, now: float) -> None:
         user.failed_attempts = 0
