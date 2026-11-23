@@ -2,20 +2,6 @@
 
 OWNER: Shalom Olorunfemi.
 
-Procedure
----------
-For each tampering scenario, build a fresh JSON store, record the baseline
-integrity result, apply the edit directly to the file (bypassing the storage
-API), then:
-  * run the offline integrity inspector;
-  * attempt to open the store (must raise ``IntegrityError``);
-  * confirm an ``integrity_failure`` event reached the audit sink;
-  * confirm the failed load did not rewrite or "repair" the file.
-
-Scenarios: changed password hash, reset failed-attempt counter, removed
-lockout, deleted user record, and a mismatched (wrong) HMAC key.
-
-Run: ``python -m experiments.exp08_integrity_tampering``
 """
 
 from __future__ import annotations
