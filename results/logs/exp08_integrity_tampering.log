@@ -1,0 +1,46 @@
++------------------------------+---------------+----------------+--------------+
+| Tampering scenario           | Offline check | Load behaviour | Audit events |
++------------------------------+---------------+----------------+--------------+
+| changed password hash        | detected      | refused        | 1            |
+| reset failed-attempt counter | detected      | refused        | 1            |
+| removed lockout              | detected      | refused        | 1            |
+| deleted user record          | detected      | refused        | 1            |
+| wrong HMAC key               | detected      | -              | -            |
++------------------------------+---------------+----------------+--------------+
+
+Experiment 8 - HMAC integrity and tampering detection
+=====================================================
+Protocol: edit data/users.json directly, then inspect and try to load it.
+
++-----------------------------------------------------------------+--------+------------------------------------------------+
+| Check                                                           | Result | Detail                                         |
++-----------------------------------------------------------------+--------+------------------------------------------------+
+| changed password hash: baseline file is valid                   | PASS   | json: integrity OK (2 record(s) verified)      |
+| changed password hash: offline check detects the change         | PASS   | json: INTEGRITY FAILURE - HMAC digest mismatch |
+| changed password hash: load refused (data not trusted)          | PASS   |                                                |
+| changed password hash: integrity failure audited                | PASS   | 1 event(s)                                     |
+| changed password hash: file not rewritten by failed load        | PASS   |                                                |
+| reset failed-attempt counter: baseline file is valid            | PASS   | json: integrity OK (2 record(s) verified)      |
+| reset failed-attempt counter: offline check detects the change  | PASS   | json: INTEGRITY FAILURE - HMAC digest mismatch |
+| reset failed-attempt counter: load refused (data not trusted)   | PASS   |                                                |
+| reset failed-attempt counter: integrity failure audited         | PASS   | 1 event(s)                                     |
+| reset failed-attempt counter: file not rewritten by failed load | PASS   |                                                |
+| removed lockout: baseline file is valid                         | PASS   | json: integrity OK (2 record(s) verified)      |
+| removed lockout: offline check detects the change               | PASS   | json: INTEGRITY FAILURE - HMAC digest mismatch |
+| removed lockout: load refused (data not trusted)                | PASS   |                                                |
+| removed lockout: integrity failure audited                      | PASS   | 1 event(s)                                     |
+| removed lockout: file not rewritten by failed load              | PASS   |                                                |
+| deleted user record: baseline file is valid                     | PASS   | json: integrity OK (2 record(s) verified)      |
+| deleted user record: offline check detects the change           | PASS   | json: INTEGRITY FAILURE - HMAC digest mismatch |
+| deleted user record: load refused (data not trusted)            | PASS   |                                                |
+| deleted user record: integrity failure audited                  | PASS   | 1 event(s)                                     |
+| deleted user record: file not rewritten by failed load          | PASS   |                                                |
+| wrong HMAC key is rejected                                      | PASS   | json: INTEGRITY FAILURE - HMAC digest mismatch |
++-----------------------------------------------------------------+--------+------------------------------------------------+
+
+Notes:
+  - The HMAC covers the entire user payload, so deleting a record or editing a non-secret field is detected just like a changed hash.
+  - Prototype limitation: the key sits next to the data file. An attacker who can read the key can forge the digest; production needs KMS/OS-keyring storage.
+  - JSON storage caches records in memory; tampering is detected at load or when verify_integrity() is called. SQLite re-verifies every row on read (Experiment 10).
+
+RESULT: 21/21 checks passed

@@ -1,0 +1,11 @@
+experiment,title,status,elapsed_seconds,return_code,log,notes
+exp01_data_inspection,Experiment 1 - Credential data inspection,SKIPPED,0,,,Pass --credential-file with an existing real credential JSON file.
+exp02_hashing_comparison,Experiment 2 - Hashing comparison,PASS,43.927,0,results/logs/exp02_hashing_comparison.log,
+exp03_password_verification,Experiment 3 - Password verification,PASS,0.138,0,results/logs/exp03_password_verification.log,
+exp04_policy_validation,Experiment 4 - Password policy validation,PASS,0.083,0,results/logs/exp04_policy_validation.log,
+exp05_online_attack,Experiment 5 - Online attack simulation,PASS,0.093,0,results/logs/exp05_online_attack.log,
+exp06_lockout_abuse,Experiment 6 - Lockout abuse and availability,PASS,0.076,0,results/logs/exp06_lockout_abuse.log,
+exp07_mfa,Experiment 7 - Multi-factor authentication,PASS,0.077,0,results/logs/exp07_mfa.log,
+exp08_integrity_tampering,Experiment 8 - Integrity and tampering,PASS,0.078,0,results/logs/exp08_integrity_tampering.log,
+exp09_sessions,Experiment 9 - Session security,PASS,0.067,0,results/logs/exp09_sessions.log,
+exp10_storage_comparison,Experiment 10 - Storage comparison,PASS,4.983,0,results/logs/exp10_storage_comparison.log,

@@ -1,0 +1,29 @@
++---------------------+---------------+----------------+-------------------------+-----------+
+| Strategy            | First lockout | Second lockout | Legitimate user blocked | Recovered |
++---------------------+---------------+----------------+-------------------------+-----------+
+| Fixed lockout       | 300 seconds   | 300 seconds    | Yes                     | Yes       |
+| Exponential backoff | 30 seconds    | 60 seconds     | Yes                     | Yes       |
++---------------------+---------------+----------------+-------------------------+-----------+
+Experiment 6 - Lockout abuse and account availability
+=====================================================
+Simulated repeated attacks against a legitimate user's account.
+
++--------------------------------------------------------+--------+----------+
+| Check                                                  | Result | Detail   |
++--------------------------------------------------------+--------+----------+
+| Fixed lockout: first legitimate login blocked          | PASS   |          |
+| Fixed lockout: second legitimate login blocked         | PASS   |          |
+| Fixed lockout: login works after lockout expires       | PASS   |          |
+| Fixed lockout: two lockouts recorded                   | PASS   | events=2 |
+| Exponential backoff: first legitimate login blocked    | PASS   |          |
+| Exponential backoff: second legitimate login blocked   | PASS   |          |
+| Exponential backoff: login works after lockout expires | PASS   |          |
+| Exponential backoff: two lockouts recorded             | PASS   | events=2 |
++--------------------------------------------------------+--------+----------+
+
+Notes:
+  - Fixed lockout uses the same delay for each lockout. Exponential backoff doubles the delay after each additional failure.
+  - Lockouts are temporary. A legitimate user can log in after the lockout period expires, provided the correct password is supplied.
+  - This demonstrates the availability trade-off: an attacker can temporarily prevent a legitimate user from accessing their account.
+
+RESULT: 8/8 checks passed

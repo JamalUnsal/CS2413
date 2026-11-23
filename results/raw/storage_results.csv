@@ -1,0 +1,18 @@
+backend,insert_seconds,single_read_ms,list_all_seconds,concurrent_updates_seconds,errors,size_kb
+json,3.21,0.002,0.0017,1.02,0,506.0
+sqlite,0.48,0.009,0.0063,0.14,0,536.0
+Check,Result,Detail
+json: all records readable,PASS,1000/1000
+json: login uses the same auth logic,PASS,
+json: no concurrency errors,PASS,0
+json: concurrent updates all applied,PASS,counter=20/20
+json: integrity valid after concurrency,PASS,
+json: tampering detected by verify_integrity,PASS,json: INTEGRITY FAILURE - HMAC digest mismatch
+json: tampered data not trusted on access,PASS,refused to load on re-open
+sqlite: all records readable,PASS,1000/1000
+sqlite: login uses the same auth logic,PASS,
+sqlite: no concurrency errors,PASS,0
+sqlite: concurrent updates all applied,PASS,counter=20/20
+sqlite: integrity valid after concurrency,PASS,
+sqlite: tampering detected by verify_integrity,PASS,sqlite: INTEGRITY FAILURE - record for 'user0000' failed verification
+sqlite: tampered data not trusted on access,PASS,row signature verified on read

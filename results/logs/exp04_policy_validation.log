@@ -1,0 +1,59 @@
+[weak] short1! -> REJECT (score 1/4) | Password must be at least 12 characters long.; Password must contain at least one uppercase letter.; Strength score 1/4 is below 3/4.
+[weak] alllowercase12! -> REJECT (score 3/4) | Password must contain at least one uppercase letter.
+[weak] ALLUPPERCASE12! -> REJECT (score 4/4) | Password must contain at least one lowercase letter.
+[weak] NoDigitsHere!! -> REJECT (score 4/4) | Password must contain at least one digit.
+[weak] NoSpecialChars12 -> REJECT (score 4/4) | Password must contain at least one special character.
+[weak] aaaaaaaaaaaa -> REJECT (score 0/4) | Password must contain at least one uppercase letter.; Password must contain at least one digit.; Password must contain at least one special character.; Strength score 0/4 is below 3/4.
+[weak] Aaaaaaaaaaa1! -> REJECT (score 2/4) | Strength score 2/4 is below 3/4.
+[weak] Abcdef12345! -> REJECT (score 2/4) | Strength score 2/4 is below 3/4.
+[weak] Qwertyuiopa1! -> REJECT (score 1/4) | Strength score 1/4 is below 3/4.
+[weak] 1234567890Aa! -> REJECT (score 1/4) | Strength score 1/4 is below 3/4.
+[weak] Password1234! -> REJECT (score 1/4) | Strength score 1/4 is below 3/4.
+[weak] January2025! -> REJECT (score 2/4) | Strength score 2/4 is below 3/4.
+[weak] Passwords12345! -> ACCEPT (score 3/4) | none
+[weak] Iloveyou123! -> REJECT (score 1/4) | Strength score 1/4 is below 3/4.
+[weak] AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAb1! -> REJECT (score 0/4) | Password must be no more than 128 characters long.; Strength score 0/4 is below 3/4.
+[common] password -> REJECT (score 0/4) | Password must be at least 12 characters long.; Password must contain at least one uppercase letter.; Password must contain at least one digit.; Password must contain at least one special character.; Password is in the common-password blocklist.; Strength score 0/4 is below 3/4.
+[common] 123456 -> REJECT (score 0/4) | Password must be at least 12 characters long.; Password must contain at least one uppercase letter.; Password must contain at least one lowercase letter.; Password must contain at least one special character.; Password is in the common-password blocklist.; Strength score 0/4 is below 3/4.
+[common] qwerty123 -> REJECT (score 0/4) | Password must be at least 12 characters long.; Password must contain at least one uppercase letter.; Password must contain at least one special character.; Password is in the common-password blocklist.; Strength score 0/4 is below 3/4.
+[common] letmein123 -> REJECT (score 1/4) | Password must be at least 12 characters long.; Password must contain at least one uppercase letter.; Password must contain at least one special character.; Password is in the common-password blocklist.; Strength score 1/4 is below 3/4.
+[common] P@ssw0rd123! -> REJECT (score 2/4) | Password is in the common-password blocklist.; Strength score 2/4 is below 3/4.
+[common] Passw0rd123! -> REJECT (score 2/4) | Password is in the common-password blocklist.; Strength score 2/4 is below 3/4.
+[common] Welcome2025! -> REJECT (score 2/4) | Password is in the common-password blocklist.; Strength score 2/4 is below 3/4.
+[common] Summer2024! -> REJECT (score 2/4) | Password must be at least 12 characters long.; Password is in the common-password blocklist.; Strength score 2/4 is below 3/4.
+[common] Winter2024! -> REJECT (score 2/4) | Password must be at least 12 characters long.; Password is in the common-password blocklist.; Strength score 2/4 is below 3/4.
+[common] Changeme123! -> REJECT (score 2/4) | Password is in the common-password blocklist.; Strength score 2/4 is below 3/4.
+[common] Qwerty123! -> REJECT (score 1/4) | Password must be at least 12 characters long.; Password is in the common-password blocklist.; Strength score 1/4 is below 3/4.
+[common] 1qaz2wsx3edc -> REJECT (score 0/4) | Password must contain at least one uppercase letter.; Password must contain at least one special character.; Password is in the common-password blocklist.; Strength score 0/4 is below 3/4.
+[username] AliceSuper99! -> REJECT (score 3/4) | Password must not contain the username.
+[username] MyALICEPass#22 -> REJECT (score 4/4) | Password must not contain the username.
+[username] xX_alice_Xx99! -> REJECT (score 4/4) | Password must not contain the username.
+[username] HazemSecret#88 -> REJECT (score 4/4) | Password must not contain the username.
+[username] 99!hazem!Galaxy -> REJECT (score 4/4) | Password must not contain the username.
+[username] ShalomKey2026$ -> REJECT (score 4/4) | Password must not contain the username.
+[username] JamalVault@77 -> REJECT (score 3/4) | Password must not contain the username.
+[username] SandeepLock#44 -> REJECT (score 4/4) | Password must not contain the username.
+[medium] P@ssw0rd!2026 -> REJECT (score 2/4) | Strength score 2/4 is below 3/4.
+[medium] Football#1999 -> REJECT (score 2/4) | Strength score 2/4 is below 3/4.
+[medium] Sunshine@2026 -> REJECT (score 2/4) | Strength score 2/4 is below 3/4.
+[medium] Dragon$12345 -> REJECT (score 1/4) | Strength score 1/4 is below 3/4.
+[medium] Shadow*98765 -> REJECT (score 2/4) | Strength score 2/4 is below 3/4.
+[medium] Master!2026! -> ACCEPT (score 3/4) | none
+[medium] Coffee&Bagel9 -> ACCEPT (score 3/4) | none
+[medium] RiverStone#42 -> ACCEPT (score 3/4) | none
+[strong] Tr0ub4dor&3!Galaxy -> ACCEPT (score 4/4) | none
+[strong] Correct-Horse-Battery-9! -> ACCEPT (score 4/4) | none
+[strong] k9#mP2$vL8@qR5!zW -> ACCEPT (score 4/4) | none
+[strong] Blueberry!Moose@749 -> ACCEPT (score 4/4) | none
+[strong] Velvet-Telescope-83$ -> ACCEPT (score 4/4) | none
+[strong] 7gH!9pL@2xQ#5vN$8m -> ACCEPT (score 4/4) | none
+[strong] Cactus*Lantern*402! -> ACCEPT (score 4/4) | none
+[strong] Quantum#Walrus#918 -> ACCEPT (score 4/4) | none
+[strong] x4!B9@nK2#wP7$dM5% -> ACCEPT (score 4/4) | none
+[strong] Copper_Falcon_617! -> ACCEPT (score 4/4) | none
+[strong] Timber!Glacier!538 -> ACCEPT (score 4/4) | none
+[strong] z8$R3!tY6@hJ9#fG2% -> ACCEPT (score 4/4) | none
+
+Total: 55 | Accepted: 16 | Rejected: 39
+Weak/Common/Username rejected: 34/35 (97.1%)
+Criterion (>= 95.0%): PASS

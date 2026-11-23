@@ -1,0 +1,37 @@
++---------+-----------------+-------------+--------------+--------------+--------+-----------+
+| Backend | Insert 1000 (s) | Read 1 (ms) | List all (s) | Threaded (s) | Errors | Size (KB) |
++---------+-----------------+-------------+--------------+--------------+--------+-----------+
+| json    | 3.21            | 0.002       | 0.0017       | 1.02         | 0      | 506.0     |
+| sqlite  | 0.48            | 0.009       | 0.0063       | 0.14         | 0      | 536.0     |
++---------+-----------------+-------------+--------------+--------------+--------+-----------+
+
+Experiment 10 - Storage backend comparison (JSON vs SQLite)
+===========================================================
+Protocol: 1000 synthetic accounts per backend, including concurrency and tampering.
+
++------------------------------------------------+--------+-----------------------------------------------------------------------+
+| Check                                          | Result | Detail                                                                |
++------------------------------------------------+--------+-----------------------------------------------------------------------+
+| json: all records readable                     | PASS   | 1000/1000                                                             |
+| json: login uses the same auth logic           | PASS   |                                                                       |
+| json: no concurrency errors                    | PASS   | 0                                                                     |
+| json: concurrent updates all applied           | PASS   | counter=20/20                                                         |
+| json: integrity valid after concurrency        | PASS   |                                                                       |
+| json: tampering detected by verify_integrity   | PASS   | json: INTEGRITY FAILURE - HMAC digest mismatch                        |
+| json: tampered data not trusted on access      | PASS   | refused to load on re-open                                            |
+| sqlite: all records readable                   | PASS   | 1000/1000                                                             |
+| sqlite: login uses the same auth logic         | PASS   |                                                                       |
+| sqlite: no concurrency errors                  | PASS   | 0                                                                     |
+| sqlite: concurrent updates all applied         | PASS   | counter=20/20                                                         |
+| sqlite: integrity valid after concurrency      | PASS   |                                                                       |
+| sqlite: tampering detected by verify_integrity | PASS   | sqlite: INTEGRITY FAILURE - record for 'user0000' failed verification |
+| sqlite: tampered data not trusted on access    | PASS   | row signature verified on read                                        |
++------------------------------------------------+--------+-----------------------------------------------------------------------+
+
+Notes:
+  - JSON rewrites the whole file on every save (O(n) per write), while SQLite updates one row in a transaction - the insert/update gap grows with account count.
+  - JSON detects tampering when the file is loaded or verify_integrity() is called; SQLite verifies each row signature on every read.
+  - In-process threading is safe for both backends. JSON is NOT safe across processes without an external file lock; SQLite provides cross-process locking and WAL.
+  - The same authentication service was used unchanged against both backends, demonstrating the storage interface works as intended.
+
+RESULT: 14/14 checks passed

@@ -1,0 +1,11 @@
+[plaintext] hash_time=0.00 ms | cracked=70/100 in 0.00s
+[md5_unsalted] hash_time=0.04 ms | cracked=70/100 in 0.00s
+[sha256_unsalted] hash_time=0.01 ms | cracked=70/100 in 0.00s
+[sha256_salted] hash_time=0.01 ms | cracked=70/100 in 0.14s
+[pbkdf2_sha256] hash_time=18.90 ms | cracked=0/100 in 2.00s
+[bcrypt_r8] hash_time=14.19 ms | cracked=0/100 in 2.00s
+[bcrypt_r10] hash_time=53.02 ms | cracked=0/100 in 2.01s
+[bcrypt_r12] hash_time=212.00 ms | cracked=0/100 in 2.12s
+[argon2id] hash_time=34.12 ms | cracked=0/100 in 2.00s
+
+Chart saved to experiments/exp02_hashing_comparison.png
