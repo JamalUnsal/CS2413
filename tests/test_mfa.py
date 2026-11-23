@@ -1,4 +1,4 @@
-"""Unit tests for TOTP MFA (owner: Sandeep Singh)."""
+"""Unit tests for TOTP MFA"""
 
 from __future__ import annotations
 
