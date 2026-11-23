@@ -48,7 +48,7 @@ def test_audit_log_redacts_sensitive_fields(tmp_path):
 
 
 def test_audit_log_does_not_raise_when_write_fails(tmp_path):
-    # A directory cannot be opened as an append-mode file.
+    
     audit = AuditLog(tmp_path)
 
     audit.record("login_success", "alice")
