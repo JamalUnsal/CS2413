@@ -7,7 +7,6 @@ Properties:
   * logout invalidates immediately, and ``invalidate_all`` supports password
     change/reset (Shalom's module calls it).
 """
-
 from __future__ import annotations
 
 import hashlib
