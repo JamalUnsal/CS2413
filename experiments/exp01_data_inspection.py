@@ -3,12 +3,6 @@
 
 OWNER: Jennifer Cruza
 
-Procedure
-
-1. Load stored user records from `data/users.json`.
-2. Verify 0 plaintext passwords exist (valid cryptographic hash prefixes).
-3. Perform salt uniqueness check. Confirm 0 hash collisions across identical passwords (proves unique per-user salts).
-4. Return PASSED if both plaintext found and duplicate collisions equal 0.
 """
 
 
