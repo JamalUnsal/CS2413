@@ -1,19 +1,3 @@
-"""Primary command-line interface.
-
-OWNER: Sandeep Singh ("primary login menu interface").
-
-This module is the reference interface.  ``--gui`` delegates to the optional
-Tkinter front end in :mod:`auth_system.gui`, which calls the same services.
-
-Menu structure:
-  * unauthenticated menu: log in, register (Hazem placeholder), reset password
-    (Shalom), quit;
-  * authenticated menu: change password (Shalom), enable TOTP MFA (Sandeep),
-    session details (Sandeep), log out.
-
-Passwords are read with :func:`getpass.getpass` and never echoed or logged.
-"""
-
 from __future__ import annotations
 
 import argparse
