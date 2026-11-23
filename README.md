@@ -1,202 +1,352 @@
-# Team 9 - Password Authentication Prototype
+# Team 9 – Password Authentication Prototype
 
-Design, implementation and security evaluation of a Python password
-authentication system (CS2413 final project, Team 9).
+**Course:** CS2413  
+**Project topic:** Password Security and Authentication  
+**Project title:** Design, Implementation, and Security Evaluation of a Python-Based Password Authentication System: Hashing, Policy Enforcement, and Attack Resistance
 
-This repository currently contains the **complete work of Sandeep Singh and
-Shalom Olorunfemi**. Every other member's module is present as a documented
-placeholder with a ready-to-fill interface, so the team can implement their
-parts without restructuring the project.
+Team 9's project designs, implements, and evaluates a Python password-authentication prototype. The project focuses on secure password storage, password-policy enforcement, protection against online password guessing, multi-factor authentication, session handling, and detection of credential-data tampering.
 
-## Module status
+The prototype is intended for educational testing in a controlled lab environment. Attack simulations use synthetic accounts and are run only against this project.
 
-| Area | Owner | Files | Status |
-| --- | --- | --- | --- |
-| Login menu (terminal + optional Tkinter window), bcrypt verification, generic errors, TOTP MFA, sessions; Experiments 3, 7, 9 | Sandeep Singh | `auth_system/auth.py`, `verification.py`, `mfa.py`, `sessions.py`, `cli.py`, `gui.py`, `experiments/exp03_*`, `exp07_*`, `exp09_*` | Implemented |
-| Password change + reset, HMAC integrity, storage interface, JSON + SQLite backends; Experiments 8, 10 | Shalom Olorunfemi | `auth_system/credentials.py`, `storage/*`, `experiments/exp08_*`, `exp10_*` | Implemented |
-| Registration, password policy, zxcvbn, bcrypt hashing setup; Experiments 2, 4 | Hazem Alfeky | `auth_system/registration.py`, `policy.py`, `passwords.hash_password` | Placeholder |
-| Lockout, rate limiting, exponential backoff, audit log; Experiments 5, 6 | Jamal Unsal | `auth_system/lockout.py`, `audit.py`, `experiments/exp05_*`, `exp06_*` | Placeholder |
-| Threat model, documentation, attack scripts, Experiment 1, graphs | Jennifer Cruza | `tools/attack_*.py`, `experiments/exp01_*`, `docs/THREAT_MODEL.md` | Placeholder |
+## 1. Project Objectives
 
-See [`docs/OWNERSHIP.md`](docs/OWNERSHIP.md) for the exact interfaces each
-placeholder must satisfy and the suggested order of work.
+The project has two connected objectives:
 
-## Requirements
+1. **Build a layered authentication system** that enforces password policy, stores credentials securely, limits repeated failed login attempts, supports multi-factor authentication, manages sessions, records security events, and detects unauthorized changes to stored user data.
+2. **Evaluate the system's defenses** through controlled password-attack simulations and security experiments. The proposal defines measurements and success criteria so that the results can be assessed rather than assumed.
 
-* Python 3.10 or newer (developed on 3.14, Windows; no platform-specific code).
-* Run every command below from this project root (the directory containing
-  `auth_system/`).
-* Already used by the implemented modules: `bcrypt`, `pyotp`, `pytest`.
-* Optional (desktop window only): `qrcode` + `Pillow` render the TOTP
-  provisioning URI as a scannable QR code. Without them the window still works
-  and shows the secret/URI as text. Tkinter itself ships with Python.
-* Only needed by a placeholder owner (install before running their experiment):
-  * `zxcvbn` - Hazem (Experiments 2 and 4)
-  * `argon2-cffi` - Hazem (Experiment 2 comparison)
-  * `matplotlib` - Jennifer (result graphs)
+The design is organized around the confidentiality, integrity, and availability (CIA) properties of information security.
 
-`python -m pip install -r requirements.txt` installs all of them.
+## 2. Threat Model
 
-## Picking up a placeholder module
+The project proposal identifies the following threats, controls, and security objectives.
 
-1. Read your contract in [`docs/OWNERSHIP.md`](docs/OWNERSHIP.md) - it lists the
-   exact method signatures and required behaviour.
-2. Fill in the TODO bodies. Keep public signatures unchanged; if you must change
-   one, update the calling module and `docs/OWNERSHIP.md` in the same commit.
-3. Add tests under `tests/` and run `python -m pytest` - the existing tests must
-   stay green.
-4. Remove the matching temporary stand-in in `auth_system/runtime.py`
-   (`NoLockoutPolicy`, `NullAuditLog`) or delete the scaffolding
-   (`auth_system/devtools.py`) once your real module replaces it.
-5. Run your experiment script(s); implemented ones exit 0 on success, 1 on a
-   failed criterion, and 2 when still a placeholder.
+| ID | Threat | Attack scenario | Proposed/implemented control | CIA property |
+|---|---|---|---|---|
+| T1 | Credential-file theft (offline attack) | An attacker obtains the stored user file and attempts to recover passwords. | Salted bcrypt password hashing; comparison with weaker hashing approaches in the evaluation. | Confidentiality |
+| T2 | Online brute force | An attacker repeatedly guesses passwords through the login interface. | Failed-attempt tracking, timed lockout, and exponential backoff. | Confidentiality, Availability |
+| T3 | Dictionary/common-password attack | An attacker tries likely or commonly used passwords. | Common-password blocklist, password-strength estimation, and login lockout. | Confidentiality |
+| T4 | Weak password selection | A user chooses a short or predictable password. | Password-policy enforcement and strength scoring during password creation. | Confidentiality |
+| T5 | User enumeration | An attacker attempts to discover valid usernames from login responses or response behavior. | Generic authentication error messages and consistent password-verification behavior. | Confidentiality |
+| T6 | Data tampering | An attacker edits stored records, such as replacing a password hash or changing a lockout counter. | HMAC integrity verification of stored user data. | Integrity |
+| T7 | Stolen or guessed password | An attacker knows a user's password but does not possess the user's second factor. | TOTP-based multi-factor authentication. | Confidentiality |
+| T8 | Session hijacking or reuse | An attacker attempts to reuse a session token after the user has logged out or the session has expired. | Random session tokens, expiry, and logout invalidation. | Confidentiality |
+| T9 | Lockout abuse (denial of service) | An attacker deliberately triggers failed logins to prevent a legitimate user from signing in. | Timed lockout and backoff rather than permanent account lockout. | Availability |
 
-## Quick start
+### Out-of-scope threats
+
+The proposal excludes network-level attacks (including traffic sniffing and man-in-the-middle attacks), malware on a user's device, phishing, and attacks against the host operating system. A deployed system would require additional infrastructure protections, including TLS and appropriate endpoint and host security.
+
+## 3. System Design and Security Controls
+
+The prototype is written in Python and uses a local JSON file as its primary credential-storage design. The implementation also contains a SQLite storage backend. The following sections describe the security controls in the project.
+
+### 3.1 Registration and Password Policy
+
+The proposed policy requires passwords to:
+
+- Contain at least 12 characters.
+- Include uppercase and lowercase letters, digits, and special characters.
+- Be absent from the configured common-password blocklist.
+- Not contain the account username.
+- Meet the configured zxcvbn password-strength threshold.
+
+The registration and password-policy components are present in the codebase. The current CLI registration menu option is not yet connected to the registration service; demonstration accounts can be prepared for local evaluation using the seeding utility.
+
+### 3.2 Secure Credential Storage
+
+Passwords are stored as password hashes rather than plaintext. The implementation uses bcrypt with a per-password salt and a configurable work factor. The project also includes password-hashing and verification helpers.
+
+The proposal calls for comparing bcrypt with weaker and alternative approaches as part of the hashing evaluation. Such comparisons should be reported only when the corresponding experiment has actually been run and its measurements recorded.
+
+An HMAC-SHA256 integrity check is used to detect unauthorized modification of stored credential data. The integrity key is maintained separately from the JSON user data.
+
+### 3.3 Login, Verification, and Sessions
+
+The login workflow verifies credentials and uses generic failure messaging so that an incorrect username and an incorrect password are not disclosed through different error messages. Successful authentication can establish a session with a random token and an expiry time. Logout invalidates the session.
+
+### 3.4 Attack Defenses
+
+The system tracks failed login attempts and supports two lockout strategies:
+
+- **Fixed lockout:** applies a configured timed lockout after the failure threshold is reached.
+- **Exponential backoff:** increases the lockout duration as repeated failures occur, subject to a maximum delay.
+
+A successful login resets the relevant failed-attempt and lockout state. Active lockouts are checked before additional failed attempts are counted.
+
+### 3.5 Multi-Factor Authentication
+
+The project uses time-based one-time passwords (TOTP) through the `pyotp` library. Users can enroll an authenticator and verify a one-time code as an additional factor when MFA is enabled. Invalid MFA attempts are subject to an attempt limit.
+
+### 3.6 Credential Management
+
+The project includes password-change and password-reset functionality. Password changes require verification of the existing password and validation of the replacement password. The reset workflow uses a time-limited token. The current implementation is a prototype; reset-token delivery is not an integrated, verified out-of-band service.
+
+### 3.7 Audit Logging
+
+The audit logger records security-related events, including authentication activity and lockout-related events. It writes JSON Lines records and redacts sensitive fields so that passwords, tokens, secrets, and hashes are not exposed in log details. Audit records can be used as supporting evidence during security experiments.
+
+## 4. Attack Simulation Tools
+
+The repository includes attack utilities for controlled evaluation of online password-guessing defenses. They use the project's authentication service rather than a separate mock login implementation.
+
+### Master attack simulator
+
+Run all supported simulator modes:
+
+```bash
+python tools/attack_simulator.py --mode all
+```
+
+Run an individual mode:
+
+```bash
+# Inspect stored credential data
+python tools/attack_simulator.py --mode inspect
+
+# Dictionary attack
+python tools/attack_simulator.py --mode dictionary
+
+# Brute-force attack
+python tools/attack_simulator.py --mode brute_force
+```
+
+Example with a limited number of dictionary attempts:
+
+```bash
+python tools/attack_simulator.py \
+    --mode dictionary \
+    --target-user alice \
+    --max-attempts 20
+```
+
+### Dictionary attack
+
+The dictionary tool tests candidate passwords from a local wordlist, a remote wordlist source, or an embedded offline fallback list.
+
+```bash
+python tools/attack_dictionary.py \
+    --target-user alice \
+    --max-attempts 50
+```
+
+To provide a local wordlist:
+
+```bash
+python tools/attack_dictionary.py \
+    --target-user alice \
+    --wordlist path/to/wordlist.txt \
+    --max-attempts 50
+```
+
+A valid local wordlist takes priority over the remote source. The tool can fall back to an embedded list when a usable local or remote list is unavailable.
+
+### Brute-force attack
+
+The brute-force tool generates candidate passwords using lowercase letters, uppercase letters, and digits. The maximum-attempt setting limits the number of guesses in a run.
+
+```bash
+python tools/attack_bruteforce.py \
+    --target-user alice \
+    --max-length 4 \
+    --max-attempts 50
+```
+
+### Safe-use requirement
+
+Run attack simulations only against the project's own local test environment or another system for which explicit authorization has been granted. Use synthetic demonstration accounts and bounded attempt limits. Do not target real accounts or third-party systems.
+
+**Development note:** The current remote dictionary-fetch helper uses an SSL context that does not verify the remote server certificate. This is a development workaround and is not suitable for production use. Use a trusted local wordlist or restore normal certificate verification before relying on remote downloads.
+
+## 5. Experiments and Evaluation Plan
+
+The revised project proposal defines nine experiments. The purpose of the experiments is to collect evidence and compare measured results with the success criteria in Section 6. A proposed experiment or target is not, by itself, evidence that the experiment has been completed or that its target has been achieved.
+
+| Experiment | Focus | Planned evaluation |
+|---|---|---|
+| 1. Data Inspection | Confidentiality | Inspect stored user records for plaintext or reversible passwords; check whether identical passwords produce different salted hashes. |
+| 2. Hashing Algorithm Comparison | Confidentiality / offline resistance | Compare plaintext, unsalted MD5, unsalted SHA-256, salted SHA-256, PBKDF2, bcrypt, and Argon2 by hashing time and offline dictionary-attack time and success rate. Evaluate bcrypt work-factor effects. |
+| 3. Password Verification | Authentication behavior | Test correct and incorrect credentials, empty and unusually long inputs, and whether responses reveal valid usernames. |
+| 4. Password Policy Validation | Weak-password resistance | Test at least 50 weak, common, medium, strong, and username-containing passwords; report acceptance, rejection reasons, and strength scores. |
+| 5. Online Brute-Force and Dictionary Simulation | Online guessing resistance | Compare no protection, fixed lockout, and exponential backoff. Measure guesses before blocking, total attack time, and whether the password is found. |
+| 6. Lockout Abuse Test | Availability | Simulate repeated failures against a legitimate account and compare the lockout impact under fixed lockout and timed backoff. |
+| 7. Multi-Factor Authentication | MFA enforcement | Test missing, incorrect, valid, and expired TOTP codes, and whether password-guessing tools can bypass the second factor. |
+| 8. Integrity and Tampering Test | Integrity | Modify stored hashes or lockout fields and verify that HMAC validation detects tampering, rejects the altered data, and produces an audit event. |
+| 9. Session Handling | Session security | Verify token randomness, expiry, and invalidation after logout. |
+
+The repository currently includes credential-data inspection and attack-simulation tooling. Experiment scripts, measurements, tables, and graphs should be added or linked as they are completed. Do not infer experiment results from the presence of a tool.
+
+### Experiment 1 – Data inspection
+
+The repository includes a data-inspection utility:
+
+```bash
+python -m experiments.exp01_data_inspection
+```
+
+It can also be given a JSON file explicitly:
+
+```bash
+python -m experiments.exp01_data_inspection --json-file data/users.json
+```
+
+Use seeded demonstration data for the inspection. Review the script's output and retain the actual output as experiment evidence.
+
+## 6. Success Criteria and Metrics
+
+The proposal defines the following targets. These are evaluation targets, not claims that every target has already been achieved.
+
+| Metric | Target defined in proposal |
+|---|---|
+| Plaintext passwords found in JSON storage | 0 |
+| Identical passwords producing identical stored hashes | 0 (unique salts) |
+| Offline dictionary attack against bcrypt compared with unsalted MD5/SHA-256 | Report both measured results; bcrypt is expected to be substantially slower to attack |
+| Failed logins before lockout | Lockout at the configured threshold (example: 5) in 100% of test runs |
+| Brute-force and dictionary success against a protected account | 0 successes within the attempt limit |
+| Weak passwords rejected by policy | At least 95% of weak or common passwords |
+| Tampering attempts detected by integrity check | 100% |
+| Login attempts bypassing MFA | 0 |
+| Username-enumeration differences in responses | None observable |
+
+Report measured values, including cases where a defense falls short of its target. The final evaluation should distinguish observed results from expected behavior.
+
+## 7. Installation and Setup
+
+### Requirements
+
+- Python 3.10 or newer.
+- `pip`.
+- Dependencies listed in `requirements.txt`.
+
+### Clone the repository
+
+```bash
+git clone https://github.com/JamalUnsal/CS2413.git
+cd CS2413
+```
+
+### Install dependencies
 
 ```bash
 python -m pip install -r requirements.txt
-
-# Registration is not implemented yet, so seed demo accounts:
-python tools/seed_demo_users.py
-
-# Run the login menu (JSON backend):
-python -m auth_system
-
-# Or with the SQLite backend:
-python -m auth_system --backend sqlite
-
-# Or use the optional desktop window (Tkinter, no extra dependency):
-python -m auth_system --gui
 ```
 
-Demo accounts created by the seeder: `alice`, `bob`, `carol` (passwords are
-printed by the script; development only).
+If your system uses `python3` instead of `python`, substitute `python3` in the commands.
 
-The data directory (`data/` by default) is created automatically. Credential
-files, the integrity key and audit logs are listed in `.gitignore` - never
-commit them.
+### Seed demonstration accounts
 
-### What works in the interfaces
+```bash
+python tools/seed_demo_users.py
+```
 
-Both the terminal menu and the optional desktop window offer the same features:
+Use only the demonstration credentials generated for the local evaluation environment. Do not commit generated user records, integrity keys, or sensitive audit logs.
 
-* Log in with username/password; generic failure message for wrong username and
-  wrong password alike.
-* Enable TOTP MFA (the provisioning URI can be pasted into an authenticator app,
-  or scanned from the optional QR code) and log in with a one-time code.
-* Change password (requires the current password; re-applies policy; invalidates
-  sessions). Policy is the placeholder, so the interface currently reports that
-  dependency until it is implemented.
-* Forgot-password reset with a single-use, time-limited token.
-* Integrity check.
-* Logout invalidates the session token.
+## 8. Running the Authentication System
 
-The desktop window is a thin view over `AuthService`/`CredentialManager`; it
-contains no authentication logic, and the CLI remains the default. It ships with
-a dark theme by default (a light theme is one checkbox away) and greets the
-signed-in user with "Welcome, &lt;username&gt;". The GUI tests skip automatically
-when no display is available.
+Run the command-line application from the repository root:
 
-Registration is intentionally disabled until Hazem implements it.
+```bash
+python -m auth_system
+```
 
-## Tests
+The project also includes a SQLite backend. Where the CLI option is available in the current checkout, it can be selected with:
+
+```bash
+python -m auth_system --backend sqlite
+```
+
+The JSON backend is the primary storage design described in the project proposal. The SQLite backend is an additional implementation option in the codebase.
+
+## 9. Testing
+
+Run the automated test suite from the repository root:
 
 ```bash
 python -m pytest
 ```
 
-The suite covers the implemented modules: bcrypt verification (including
->72-byte passwords and malformed hashes), sessions, TOTP, login/MFA flows,
-credential change/reset, both storage backends, tamper detection, the CLI, and
-the optional Tkinter window (those tests skip automatically without a display).
-Tests use a bcrypt cost of 4 for speed; production defaults to 12.
+The latest test run reported by the team completed with **98 passed**. This is the result reported for the tested local code state; rerun the suite after any source-code or dependency changes.
 
-## Experiments
+The test suite covers authentication workflows and supporting components, including password handling, lockout behavior, audit logging, storage, integrity validation, and CLI behavior.
 
-Implemented (Sandeep and Shalom):
+## 10. Project Structure
 
-```bash
-python -m experiments.exp03_password_verification
-python -m experiments.exp07_mfa
-python -m experiments.exp09_sessions
-python -m experiments.exp08_integrity_tampering
-python -m experiments.exp10_storage_comparison --users 1000
+The repository is organized into authentication services, storage backends, experiments, tests, and attack tools. The following is a high-level overview; consult the repository for the complete current file tree.
+
+```text
+CS2413/
+├── auth_system/
+│   ├── auth.py
+│   ├── audit.py
+│   ├── cli.py
+│   ├── config.py
+│   ├── credentials.py
+│   ├── lockout.py
+│   ├── mfa.py
+│   ├── models.py
+│   ├── passwords.py
+│   ├── policy.py
+│   ├── registration.py
+│   ├── runtime.py
+│   ├── sessions.py
+│   ├── verification.py
+│   └── storage/
+├── data/                 # Local runtime data; do not commit secrets
+├── docs/
+├── experiments/
+├── tests/
+├── tools/
+│   ├── attack_simulator.py
+│   ├── attack_dictionary.py
+│   ├── attack_bruteforce.py
+│   └── seed_demo_users.py
+├── requirements.txt
+└── README.md
 ```
 
-Each script prints a pass/fail table and exits non-zero if a success criterion
-fails. Placeholder experiments exit with code 2 and name their owner:
+## 11. Team Members and Responsibilities
 
-```bash
-python -m experiments.exp01_data_inspection   # Jennifer
-python -m experiments.exp02_hashing_comparison # Hazem
-python -m experiments.exp04_policy_validation  # Hazem
-python -m experiments.exp05_online_attack      # Jamal
-python -m experiments.exp06_lockout_abuse      # Jamal
-```
+The responsibilities below follow the revised project proposal.
 
-## Architecture
+| Team member | Responsibilities |
+|---|---|
+| Hazem Alfeky | Registration prompts; password complexity and blocklist validation; zxcvbn strength scoring; initial bcrypt hashing setup; hashing algorithm comparison (Experiment 2); password-policy validation (Experiment 4). |
+| Sandeep Singh | Primary login menu; bcrypt verification; generic error handling against user enumeration; TOTP-based MFA; session-token handling; Experiments 3, 7, and 9. |
+| Shalom Olorunfemi | Password change with old-password verification; secure reset flow; HMAC integrity protection of the JSON file; Experiment 8. |
+| Jamal Unsal | Account locking, rate limiting, and exponential backoff; audit logging; assistance with attack scripts; Experiments 5 and 6. |
+| Jennifer Cruza | Threat model; project documentation and final report; brute-force and dictionary attack scripts; Experiment 1; consolidation of results and graphs. |
 
-```
-auth_system/
-  config.py          tunable settings for every module (shared)
-  models.py          UserRecord schema (shared, version 1)
-  errors.py          shared exception types
-  results.py         OperationResult (shared)
-  audit.py           [Jamal] audit interface + temporary null/in-memory sinks
-  policy.py          [Hazem] policy + zxcvbn interface (placeholder)
-  passwords.py       [Hazem] hash_password (placeholder) + shared prepare_password
-  registration.py    [Hazem] registration service (placeholder)
-  lockout.py         [Jamal] fixed / exponential backoff (placeholders) + no-op stand-in
-  verification.py    [Sandeep] bcrypt verify, dummy-hash padding, generic message
-  mfa.py             [Sandeep] TOTP enrollment/verification
-  sessions.py        [Sandeep] random tokens, expiry, logout/all invalidation
-  auth.py            [Sandeep] login orchestration + MFA enforcement
-  credentials.py     [Shalom] change password, reset flow, session invalidation
-  storage/
-    base.py          [Shalom] StorageBackend + IntegrityReport
-    integrity.py     [Shalom] HMAC-SHA256 signer, key file management
-    json_backend.py  [Shalom] JSON backend, whole-payload HMAC, atomic writes
-    sqlite_backend.py[Shalom] SQLite backend, per-row HMAC + signed manifest
-  runtime.py         composition root; point for swapping placeholder services
-  cli.py             [Sandeep] terminal menus
-  gui.py             [Sandeep] optional Tkinter window (same services as the CLI)
-  devtools.py        temporary seeding helper (delete once registration lands)
-experiments/         one script per proposal experiment
-tools/               demo seeder + attack-script placeholders (Jennifer)
-docs/                ownership guide, threat model placeholder
-tests/               pytest suite
-```
+All team members participate in code review, testing, and the final presentation.
 
-## Security design notes
+## 12. Limitations and Ethical Considerations
 
-* **Hashing contract.** bcrypt reads only 72 input bytes; `prepare_password`
-  pre-hashes with SHA-256 + base64 so long passphrases are never truncated.
-  Sandeep's verifier and Hazem's hasher must keep sharing this helper.
-* **Enumeration resistance.** Every credential failure returns
-  `Invalid username or password.` Unknown usernames pay the same bcrypt cost via
-  a dummy hash at the configured work factor. Internal reasons are never shown.
-* **Sessions.** `secrets.token_urlsafe(32)`, absolute expiry, only SHA-256
-  fingerprints stored in memory, logout/all-session invalidation, and password
-  change/reset invalidates every session.
-* **MFA.** TOTP codes are verified with a configurable clock-skew window; wrong
-  codes are counted and temporarily lock the second factor.
-* **Integrity.** HMAC-SHA256 over canonical JSON. JSON signs the whole user
-  payload (detects edits and deletions). SQLite signs every row *and* a
-  table-level manifest (detects row edits, insertions and deletions). The key
-  lives in a separate file, never in the credential store.
-* **Atomic writes.** JSON uses a temp file + `os.replace`; SQLite uses
-  transactions and WAL.
+This project is an educational prototype and is not intended for production deployment.
 
-## Known limitations (to discuss in the report)
+- JSON file storage does not provide the concurrency control or operational protections of a production database.
+- The HMAC key and TOTP secrets require stronger secret management in a deployed system.
+- The current CLI registration option is not connected to the registration service.
+- Password-reset token delivery is not integrated with a verified out-of-band channel.
+- The remote dictionary-fetch helper currently bypasses SSL certificate verification and should be corrected before production use.
+- The prototype does not address the network, endpoint, phishing, or host-operating-system threats listed as out of scope in the proposal.
 
-* The integrity key sits next to the data in the prototype; production needs a
-  KMS/OS keyring. A local attacker with the key can forge the digest.
-* JSON storage rewrites the whole file per write and is not multi-process safe.
-* Sessions are in memory, so a restart logs everyone out.
-* Reset tokens are printed by the CLI because there is no email delivery.
-* Password policy and hashing are not implemented yet (Hazem); lockout/backoff
-  and audit persistence are not implemented yet (Jamal).
-* The default lockout policy is a documented no-op stand-in so login works
-  before Jamal's strategies land.
-* Test/experiment seeding bypasses registration (`auth_system/devtools.py`);
-  delete it once registration is implemented.
+All attack simulations are restricted to the team's own system and synthetic test accounts in a controlled lab environment. No real credentials or unauthorized third-party systems are to be targeted.
+
+## 13. Project Deliverables
+
+The revised proposal identifies the following expected deliverables:
+
+1. Python source code for the authentication system, attack scripts, and hashing-comparison harness.
+2. A written threat model mapping threats to controls and CIA properties.
+3. Experiment results with tables and graphs evaluated against the stated success criteria.
+4. A final report describing design decisions, findings, limitations, and recommendations.
+5. A final presentation demonstrating login, lockout, MFA, and tamper-detection experiments.
+
+The README documents the project and provides entry points to the code and evaluation workflow. The detailed threat/security analysis and full experiment findings should remain separate project deliverables.
+
+## Project Information
+
+- **Course:** CS2413
+- **Team:** 9
+- **Project topic:** Password Security and Authentication
+- **Repository:** https://github.com/JamalUnsal/CS2413
+- **Environment:** Controlled educational lab using synthetic test accounts
