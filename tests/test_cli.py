@@ -1,4 +1,4 @@
-"""Smoke tests for the CLI login menu (owner: Sandeep Singh)."""
+"""Smoke tests for the CLI login menu."""
 
 from __future__ import annotations
 
