@@ -1,21 +1,3 @@
-"""JSON file storage backend with HMAC integrity protection.
-
-OWNER: Shalom Olorunfemi.
-
-File layout::
-
-    {
-      "schema_version": 1,
-      "users": { "<username>": { ...UserRecord... } },
-      "integrity": {"algorithm": "HMAC-SHA256", "digest": "<hex>"}
-    }
-
-The digest covers the canonical encoding of ``schema_version`` + ``users``
-only.  Writes are atomic (temp file + ``os.replace``) and serialised by an
-in-process lock.  A failed integrity check makes the backend refuse to expose
-or modify data - it never "repairs" silently.
-"""
-
 from __future__ import annotations
 
 import json
