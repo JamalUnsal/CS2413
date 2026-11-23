@@ -1,8 +1,6 @@
 """Object wiring for the prototype (composition root).
 
-Keeps CLI, experiments and tests from constructing services by hand.  Swap the
-lockout strategy here when Jamal's implementations land; swap the audit log here
-when Jamal's file-backed logger lands.
+Keeps CLI, experiments and tests from constructing services by hand.
 """
 
 from __future__ import annotations
