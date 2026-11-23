@@ -1,38 +1,3 @@
-"""Account lockout, rate limiting and exponential backoff.
-
-OWNER: Jamal Unsal (Experiments 5 and 6).
-
-STATUS: Implemented
-
-The login service only uses these three methods, so implementing them is the
-whole integration:
-
-``check(user, now)``
-    Decide whether a login attempt may proceed.  Return
-    ``LockoutDecision(allowed=False, retry_after=seconds)`` while a lockout is
-    active.  Never raise for a locked account.
-
-``register_failure(user, now)``
-    Update ``user.failed_attempts`` / ``user.lockout_until`` in place and return
-    the resulting decision (``locked=True`` when this failure tripped the
-    threshold).  The caller persists the record.
-
-``reset(user, now)``
-    Clear ``failed_attempts`` and ``lockout_until`` after a successful login.
-
-Strategies required by the proposal:
-  * ``FixedLockoutPolicy`` - lock for ``fixed_lockout_seconds`` after
-    ``lockout_threshold`` consecutive failures.
-  * ``ExponentialBackoffPolicy`` - delay grows from ``backoff_base_seconds``,
-    doubles per failure beyond the threshold, capped at
-    ``backoff_max_seconds``.  Timed lockout only (threat T9: no permanent
-    lockout).
-
-Do the arithmetic against the injected ``now`` so Experiments 5/6 can simulate
-time without sleeping.
-"""
-
-
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
