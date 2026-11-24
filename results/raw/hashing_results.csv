@@ -1,0 +1,10 @@
+scheme,hash_time_ms,accounts_cracked_out_of_100,attack_elapsed_seconds
+plaintext,0.0,70,0.0
+md5_unsalted,0.02,70,0.0
+sha256_unsalted,0.0,70,0.0
+sha256_salted,0.01,70,0.13
+pbkdf2_sha256,19.56,0,2.0
+bcrypt_r8,14.08,0,2.0
+bcrypt_r10,52.94,0,2.01
+bcrypt_r12,211.73,0,2.12
+argon2id,33.35,0,2.03

@@ -1,31 +1,3 @@
-"""Optional Tkinter desktop front end for the authentication prototype.
-
-OWNER: Sandeep Singh ("primary login menu interface").
-
-This window is a thin view over exactly the same services as the CLI
-(``auth_system.cli``): it calls ``AuthService`` and ``CredentialManager`` and
-contains **no authentication logic of its own**.  The CLI remains the reference
-interface used by the tests and experiments; this module only adds a mouse-
-driven presentation for demos.
-
-Features
---------
-* Dark theme by default (palette below) with a light/dark toggle in the header.
-* "Welcome, <username>" on the screen shown after a successful login.
-* Optional QR code for TOTP enrollment: if the third-party ``qrcode`` and
-  ``Pillow`` packages are installed the provisioning URI is rendered as a
-  scannable image; otherwise the secret and URI are still shown as text, so the
-  core project keeps working with no extra dependencies.
-
-Launch::
-
-    python -m auth_system --gui
-    python -m auth_system.gui --backend sqlite
-
-Tkinter ships with the standard Python distribution.  If no display is
-available the CLI still works.
-"""
-
 from __future__ import annotations
 
 import argparse

@@ -1,22 +1,3 @@
-"""Storage abstraction.
-
-OWNER: Shalom Olorunfemi.
-
-All authentication, policy, MFA, lockout and credential modules read and write
-user records through this interface only.  The JSON file is the reference
-backend; the SQLite backend proves the interface is replaceable (Experiment 10).
-
-Contract notes:
-  * ``get_user`` returns a detached copy (``None`` when unknown).
-  * ``save_user`` inserts or replaces the record.
-  * ``list_users`` returns detached copies.
-  * ``delete_user`` returns ``True`` if a record was removed.
-  * ``verify_integrity`` never raises; it reports what it found so experiments
-    and CLI diagnostics can display the result.
-  * Backend implementations MUST verify integrity before trusting stored data
-    and MUST raise :class:`auth_system.errors.IntegrityError` when it fails.
-"""
-
 from __future__ import annotations
 
 from abc import ABC, abstractmethod

@@ -1,17 +1,7 @@
 """Experiment 9 - Session handling.
 
-OWNER: Sandeep Singh.
+OWNER: Shalom Olorunfemi
 
-Procedure
----------
-  * issue many tokens and confirm they are unique, long and unpredictable;
-  * confirm only token fingerprints are retained (raw tokens are not stored);
-  * confirm sessions expire at the configured time;
-  * confirm logout invalidates a token immediately;
-  * confirm a forged/expired token is rejected;
-  * confirm ``invalidate_all`` clears every session for an account.
-
-Run: ``python -m experiments.exp09_sessions``
 """
 
 from __future__ import annotations

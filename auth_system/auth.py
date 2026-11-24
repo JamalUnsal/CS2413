@@ -1,21 +1,3 @@
-"""Login orchestration: verification, generic errors, MFA and sessions.
-
-OWNER: Sandeep Singh (Experiments 3, 7 and 9).
-
-Flow:
-  1. Reject empty input with the same generic message as any other failure.
-  2. Unknown username -> run the dummy bcrypt check (equal cost) + generic error.
-  3. Lockout policy check (Jamal's module; ``NoLockoutPolicy`` until ready).
-  4. bcrypt verification -> on failure record the attempt and return the generic
-     message, regardless of whether the username exists.
-  5. If MFA is enabled, require a valid TOTP code and limit code attempts.
-  6. On success reset failure state, create a session token and return it.
-
-The public ``message`` on every failure is either ``INVALID_CREDENTIALS_MESSAGE``
-or ``INVALID_MFA_MESSAGE``; the machine-readable ``reason`` is for the audit log
-and experiments only and must never be shown to end users.
-"""
-
 from __future__ import annotations
 
 import time

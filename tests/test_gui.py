@@ -1,7 +1,5 @@
-"""Smoke tests for the optional Tkinter interface (owner: Sandeep Singh).
+"""Smoke tests for the optional Tkinter interface.
 
-The tests skip automatically when no display is available (e.g. a headless CI
-runner), so the CLI suite stays portable.
 """
 
 from __future__ import annotations

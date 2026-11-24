@@ -1,14 +1,4 @@
 """Password policy and strength estimation.
-
-OWNER: Hazem Alfeky (registration prompts, complexity + blocklist validation,
-zxcvbn strength scoring; Experiments 2 and 4).
-
-STATUS: placeholder - every method raises ``NotImplementedError``.
-
-The rest of the system (registration in this module's sibling, and Shalom's
-change/reset flow) already calls :class:`PasswordPolicy`, so implementing these
-methods is enough to switch the whole pipeline on.  Contract:
-
 ``validate_password(username, password) -> PolicyResult``
     * minimum length from ``Settings.password_min_length`` (12);
     * maximum length from ``Settings.password_max_length`` (128) to bound work;
@@ -23,9 +13,6 @@ methods is enough to switch the whole pipeline on.  Contract:
 ``strength(password) -> PolicyResult``
     * zxcvbn score in ``score`` and its warning/suggestions in ``feedback``;
       use it in the registration prompt to guide the user.
-
-``PolicyResult.ok`` is the only field callers branch on.  It must be ``True``
-only when every rule above passes.
 """
 
 from __future__ import annotations

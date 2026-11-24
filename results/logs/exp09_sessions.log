@@ -1,0 +1,38 @@
++-----------------------+--------------------------------+
+| Property              | Observed value                 |
++-----------------------+--------------------------------+
+| Token sample size     | 200                            |
+| Unique tokens         | 200                            |
+| Minimum token length  | 43                             |
+| Session TTL (seconds) | 60                             |
+| Raw tokens stored     | no (SHA-256 fingerprints only) |
+| Expiry enforced       | yes                            |
+| Logout invalidation   | yes                            |
++-----------------------+--------------------------------+
+
+Experiment 9 - Session tokens, expiry and logout
+================================================
+Protocol: issue many tokens, then check randomness, expiry and invalidation.
+
++--------------------------------------------------+--------+-------------+
+| Check                                            | Result | Detail      |
++--------------------------------------------------+--------+-------------+
+| login issues a session                           | PASS   |             |
+| 200 tokens are all unique                        | PASS   |             |
+| token length is at least 32 characters           | PASS   | min=43      |
+| tokens are high-entropy URL-safe strings         | PASS   |             |
+| raw tokens are not retained by the session store | PASS   |             |
+| fresh session validates                          | PASS   |             |
+| session valid just before expiry                 | PASS   |             |
+| session rejected after expiry                    | PASS   |             |
+| token rejected after logout                      | PASS   |             |
+| logout reports invalidation                      | PASS   |             |
+| modified token is rejected                       | PASS   |             |
+| invalidate_all clears every account session      | PASS   | removed=204 |
+| no sessions remain for the account               | PASS   |             |
++--------------------------------------------------+--------+-------------+
+
+Notes:
+  - Observed character entropy ~5.99 bits/char over 200 tokens; each token is 256 random bits.
+
+RESULT: 13/13 checks passed

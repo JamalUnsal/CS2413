@@ -1,7 +1,4 @@
 """Storage package.
-
-OWNER: Shalom Olorunfemi.
-
 Use :func:`create_storage` so the rest of the system never imports a concrete
 backend directly.
 """

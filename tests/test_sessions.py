@@ -1,4 +1,4 @@
-"""Unit tests for session handling (owner: Sandeep Singh)."""
+"""Unit tests for session handling """
 
 from __future__ import annotations
 

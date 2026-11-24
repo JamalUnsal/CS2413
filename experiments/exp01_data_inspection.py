@@ -3,12 +3,6 @@
 
 OWNER: Jennifer Cruza
 
-Procedure
-
-1. Load stored user records from `data/users.json`.
-2. Verify 0 plaintext passwords exist (valid cryptographic hash prefixes).
-3. Perform salt uniqueness check. Confirm 0 hash collisions across identical passwords (proves unique per-user salts).
-4. Return PASSED if both plaintext found and duplicate collisions equal 0.
 """
 
 
@@ -29,9 +23,9 @@ if str(REPO_ROOT) not in sys.path:
 
 def inspect_json_storage(json_path: str = "data/users.json") -> Dict[str, Any]:
     """
-    Executes Experiment 1: Confidentiality & Salt Uniqueness Inspection.
+    Executes Experiment 1: Confidentiality and Salt Uniqueness Inspection.
     Inspects backend JSON file to ensure zero plaintext passwords exist
-    and verifies that identical passwords produce distinct per-user hashes.
+    and verifies that identical passwords produce distinct hashes.
     """
     print("\n" + "="*70)
     print("  EXPERIMENT 1: JSON CREDENTIAL DATA INSPECTION (CONFIDENTIALITY)")

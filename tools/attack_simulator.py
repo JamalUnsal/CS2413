@@ -111,12 +111,16 @@ def main():
     print(f"[*] Integrity key: {settings.integrity_key_path}")
 
     runtime = None
-
+    
+    
     try:
+        from auth_system.lockout import NoLockoutPolicy
+
         # init real auth system
         runtime = build_runtime(
             settings=settings,
-            backend="json"
+            backend="json",
+            #lockout =NoLockoutPolicy()
         )
 
         simulator = TargetSystemSimulator(runtime.auth)

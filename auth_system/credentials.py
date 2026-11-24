@@ -1,7 +1,4 @@
 """Credential update features: password change and secure reset flow.
-
-OWNER: Shalom Olorunfemi.
-
 Password change (proposal Section 5.6):
   * requires the current password (bcrypt verification);
   * re-applies the full password policy to the new password;

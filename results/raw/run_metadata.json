@@ -1,0 +1,174 @@
+{
+  "generated_at_utc": "2026-11-23T23:12:10.883313+00:00",
+  "repository": "/Users/jennifercruza/Documents/GitHub/CS2413",
+  "experiments": [
+    {
+      "status": "PASS",
+      "return_code": 0,
+      "elapsed_seconds": 0.089,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
+        "-m",
+        "experiments.exp01_data_inspection",
+        "--json-file",
+        "/Users/jennifercruza/Documents/GitHub/CS2413/data/users.json"
+      ],
+      "log": "results/logs/exp01_data_inspection.log",
+      "error": "",
+      "experiment": "exp01_data_inspection",
+      "title": "Experiment 1 - Credential data inspection"
+    },
+    {
+      "status": "PASS",
+      "return_code": 0,
+      "elapsed_seconds": 44.052,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
+        "-m",
+        "experiments.exp02_hashing_comparison"
+      ],
+      "log": "results/logs/exp02_hashing_comparison.log",
+      "error": "",
+      "experiment": "exp02_hashing_comparison",
+      "title": "Experiment 2 - Hashing comparison"
+    },
+    {
+      "status": "PASS",
+      "return_code": 0,
+      "elapsed_seconds": 0.111,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
+        "-m",
+        "experiments.exp03_password_verification"
+      ],
+      "log": "results/logs/exp03_password_verification.log",
+      "error": "",
+      "experiment": "exp03_password_verification",
+      "title": "Experiment 3 - Password verification"
+    },
+    {
+      "status": "PASS",
+      "return_code": 0,
+      "elapsed_seconds": 0.081,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
+        "-m",
+        "experiments.exp04_policy_validation"
+      ],
+      "log": "results/logs/exp04_policy_validation.log",
+      "error": "",
+      "experiment": "exp04_policy_validation",
+      "title": "Experiment 4 - Password policy validation"
+    },
+    {
+      "status": "PASS",
+      "return_code": 0,
+      "elapsed_seconds": 0.098,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
+        "-m",
+        "experiments.exp05_online_attack"
+      ],
+      "log": "results/logs/exp05_online_attack.log",
+      "error": "",
+      "experiment": "exp05_online_attack",
+      "title": "Experiment 5 - Online attack simulation"
+    },
+    {
+      "status": "PASS",
+      "return_code": 0,
+      "elapsed_seconds": 0.075,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
+        "-m",
+        "experiments.exp06_lockout_abuse"
+      ],
+      "log": "results/logs/exp06_lockout_abuse.log",
+      "error": "",
+      "experiment": "exp06_lockout_abuse",
+      "title": "Experiment 6 - Lockout abuse and availability"
+    },
+    {
+      "status": "PASS",
+      "return_code": 0,
+      "elapsed_seconds": 0.078,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
+        "-m",
+        "experiments.exp07_mfa"
+      ],
+      "log": "results/logs/exp07_mfa.log",
+      "error": "",
+      "experiment": "exp07_mfa",
+      "title": "Experiment 7 - Multi-factor authentication"
+    },
+    {
+      "status": "PASS",
+      "return_code": 0,
+      "elapsed_seconds": 0.077,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
+        "-m",
+        "experiments.exp08_integrity_tampering"
+      ],
+      "log": "results/logs/exp08_integrity_tampering.log",
+      "error": "",
+      "experiment": "exp08_integrity_tampering",
+      "title": "Experiment 8 - Integrity and tampering"
+    },
+    {
+      "status": "PASS",
+      "return_code": 0,
+      "elapsed_seconds": 0.065,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
+        "-m",
+        "experiments.exp09_sessions"
+      ],
+      "log": "results/logs/exp09_sessions.log",
+      "error": "",
+      "experiment": "exp09_sessions",
+      "title": "Experiment 9 - Session security"
+    },
+    {
+      "status": "PASS",
+      "return_code": 0,
+      "elapsed_seconds": 5.251,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
+        "-m",
+        "experiments.exp10_storage_comparison"
+      ],
+      "log": "results/logs/exp10_storage_comparison.log",
+      "error": "",
+      "experiment": "exp10_storage_comparison",
+      "title": "Experiment 10 - Storage comparison"
+    }
+  ],
+  "automated_tests": {
+    "status": "PASS",
+    "return_code": 0,
+    "elapsed_seconds": 2.754,
+    "command": [
+      "/Library/Frameworks/Python.framework/Versions/3.15/bin/python3",
+      "-m",
+      "pytest",
+      "-q"
+    ],
+    "log": "results/logs/pytest.log",
+    "error": "",
+    "output": "........................................................................ [ 73%]\n..........................                                               [100%]\n",
+    "title": "Automated pytest suite"
+  },
+  "charts": [
+    "results/graphs/hashing_time.png",
+    "results/graphs/dictionary_crack_results.png",
+    "results/graphs/password_policy_results.png",
+    "results/graphs/online_attack_attempts.png",
+    "results/graphs/lockout_duration_comparison.png",
+    "results/graphs/storage_insert_time_s.png",
+    "results/graphs/storage_single_read_ms.png",
+    "results/graphs/storage_list_all_time_s.png",
+    "results/graphs/storage_concurrent_updates_s.png"
+  ]
+}

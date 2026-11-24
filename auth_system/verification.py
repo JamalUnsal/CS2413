@@ -1,14 +1,3 @@
-"""Generic credential-verification helpers.
-
-OWNER: Sandeep Singh ("bcrypt verification", generic error handling against
-user enumeration, Experiments 3/7/9).
-
-Why a dummy hash?  If an unknown username returned immediately while a known
-username paid the bcrypt cost, response time would reveal which accounts exist
-(threat T5).  :func:`dummy_verify` performs the same work against a throwaway
-hash so both paths cost the same.  All failures return the same message.
-"""
-
 from __future__ import annotations
 
 import bcrypt
@@ -16,7 +5,7 @@ import bcrypt
 from auth_system.passwords import prepare_password
 
 # Single generic message for every credential failure: wrong username, wrong
-# password, empty input or malformed record.  Never vary it.
+# password, empty input or malformed record.
 INVALID_CREDENTIALS_MESSAGE = "Invalid username or password."
 
 # bcrypt hashes of "team9-dummy-password-not-used-anywhere" prepared with the

@@ -1,24 +1,7 @@
 """Experiment 3 - Password verification and username enumeration.
 
-OWNER: Sandeep Singh.
+OWNER: Shalom Olorunfemi
 
-Procedure
----------
-Register a known account, then exercise the login function with:
-  * correct username and password;
-  * wrong password for an existing account;
-  * non-existent username;
-  * empty username and empty password;
-  * an unusually long password (4096 characters).
-
-Pass criteria (Section 7):
-  * correct credentials are accepted and issue a session;
-  * every failure is denied without a session;
-  * all credential failures return the identical message, so the response does
-    not reveal whether the username exists;
-  * long/empty input is handled without exceptions.
-
-Run: ``python -m experiments.exp03_password_verification``
 """
 
 from __future__ import annotations
