@@ -77,7 +77,7 @@ def _main_menu(runtime: Runtime) -> None:
     while True:
         _print_header(runtime)
         print(" 1) Log in")
-        print(" 2) Register new user                [not implemented]")
+        print(" 2) Register new user")
         print(" 3) Forgot password / reset")
         print(" 4) Check storage integrity")
         print(" 5) Quit")
@@ -89,11 +89,7 @@ def _main_menu(runtime: Runtime) -> None:
                 assert result.session_token is not None
                 _authenticated_menu(runtime, result.session_token)
         elif choice == "2":
-            print(
-                "\nRegistration, password policy and strength scoring are not\n"
-                "implemented yet. Use tools/seed_demo_users.py to create demo\n"
-                "accounts until then.\n"
-            )
+            _register_flow(runtime)
         elif choice == "3":
             _reset_flow(runtime)
         elif choice == "4":
@@ -159,6 +155,21 @@ def _login_flow(runtime: Runtime) -> LoginResult | None:
             f"{result.session_token}\n"
         )
     return result
+
+def _register_flow(runtime: Runtime) -> None:
+    username = _ask("Choose a username: ")
+    password = getpass.getpass("Choose a password: ")
+    confirm = getpass.getpass("Confirm password: ")
+    if password != confirm:
+        print("\nThe passwords do not match.\n")
+        return
+
+    result = runtime.registration.register(username, password)
+    print(f"\n{result.message}")
+    if not result.success and result.reasons:
+        for reason in result.reasons:
+            print(f"  - {reason}")
+    print()
 
 
 def _change_password_flow(runtime: Runtime, token: str) -> None:
