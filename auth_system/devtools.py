@@ -1,13 +1,4 @@
-"""Temporary development scaffolding (NOT part of any member's deliverable).
-
-The registration path (Hazem) is a placeholder, so there is no supported way to
-create accounts yet.  To keep the login/MFA/session/integrity work executable,
-this module provides a clearly marked development seeder that hashes with
-bcrypt directly.
-
-DELETE THIS MODULE once ``RegistrationService.register`` and
-``passwords.hash_password`` are implemented, so every account goes through the
-real registration pipeline.
+"""Temporary devtool for putting a user directly into storage. not for the final submission.  This is just for testing and development purposes.  It bypasses the normal registration flow and password policy, so it should not be used in production or in any security-sensitive context.
 """
 
 from __future__ import annotations
