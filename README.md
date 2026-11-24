@@ -6,7 +6,7 @@
 
 ## Project overview
 
-Team 9 developed a Python authentication prototype and evaluated its password-handling and account-protection controls through ten controlled experiments. The implementation includes password verification, password-policy checks, bcrypt-based credential hashing, fixed and exponential lockout strategies, TOTP multi-factor authentication (MFA), session lifecycle management, audit logging, credential-integrity checks, and JSON/SQLite storage backends.
+We developed a Python authentication prototype and evaluated its password-handling and account-protection controls through ten controlled experiments. The implementation includes password verification, password-policy checks, bcrypt-based credential hashing, fixed and exponential lockout strategies, TOTP multi-factor authentication (MFA), session lifecycle management, audit logging, credential-integrity checks, and JSON/SQLite storage backends.
 
 The project is an educational prototype. Experiments use synthetic accounts and controlled local inputs; they are not intended to target real users or third-party systems.
 
@@ -34,7 +34,7 @@ The project is an educational prototype. Experiments use synthetic accounts and 
 | Audit | JSON Lines event logging with sensitive-field redaction |
 | Storage | JSON and SQLite backends with integrity checks |
 
-The default application password-hashing implementation uses bcrypt. Argon2id appears in the comparative hashing experiment; it should not be described as the application's default hashing backend.
+The default application password-hashing implementation uses bcrypt. Argon2id is used in the comparative hashing experiment (2).
 
 ## Repository organization
 
@@ -50,7 +50,6 @@ CS2413/
 └── README.md
 ```
 
-Consult the current checkout for the complete file tree. Runtime credential files, integrity keys, TOTP secrets, and sensitive logs must not be committed.
 
 ## Requirements and setup
 
@@ -114,7 +113,7 @@ A PASS means that the experiment's programmed checks completed successfully. It 
 - Identical hash collisions: **0**.
 - All three inspected records were reported as valid salted bcrypt hashes.
 
-The experiment printed only hash prefixes in its log. The result supports the conclusion that the supplied synthetic JSON file contained no detected plaintext passwords and that the three inspected accounts had distinct salted hashes. It does not establish the safety of other files or prove that credentials are secure in every deployment.
+The experiment printed only hash prefixes in its log. The result supports the conclusion that the supplied synthetic JSON file contained no detected plaintext passwords and that the three inspected accounts had distinct salted hashes.
 
 ### Password hashing (Experiment 2)
 
@@ -130,7 +129,7 @@ The experiment printed only hash prefixes in its log. The result supports the co
 | bcrypt cost 12 | 212.00 ms | 0/100 |
 | Argon2id | 34.12 ms | 0/100 |
 
-The experiment used a fixed 100-account test set and a two-second cracking window per scheme. A result of 0/100 within that limit is not proof that a hash is uncrackable.
+The experiment used a fixed 100-account test set and a two-second cracking window per scheme. 
 
 ### Password policy (Experiment 4)
 
@@ -158,8 +157,6 @@ With no lockout, the brute-force and dictionary simulations reached the correct 
 - The password-reset demonstration does not provide a production-grade verified email or out-of-band delivery channel.
 - Account lockout can temporarily deny access to legitimate users; this is an availability trade-off.
 - Timing measurements are environment- and configuration-dependent. The fast test configuration is not a production benchmark.
-
-All attack experiments must remain limited to the team's own local prototype and synthetic accounts, or another environment for which explicit authorization has been granted.
 
 ## Team responsibilities
 
