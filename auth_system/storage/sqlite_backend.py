@@ -1,16 +1,11 @@
-"""SQLite storage backend behind the same interface as the JSON backend.
-Integrity design:
-  * each row stores the canonical JSON record plus its own HMAC-SHA256
-    signature (same key file as the JSON backend);
-  * a table-level *manifest* HMAC covers the ordered list of
-    ``(username, signature)`` pairs, so deleting or inserting a row outside the
-    storage API is detected too - a per-row signature alone cannot catch that;
-  * reads verify the row signature and that the record's username matches the
-    row key;
-  * opening a database re-verifies the manifest before trusting it.
+"""SQLite storage backend implementing the same interface as the JSON backend.
 
-The backend adds what the JSON prototype lacks: transactional writes, row-level
-locking and safe concurrent access from multiple threads/processes.
+Each row stores the canonical JSON user record alongside an HMAC-SHA256
+signature using the shared integrity key. A table-level manifest HMAC signs
+the ordered list of username and signature pairs to detect unauthorized row
+insertions or deletions, and is re-verified whenever the database opens.
+Provides transactional writes and safe concurrent access across threads and
+processes.
 """
 
 from __future__ import annotations

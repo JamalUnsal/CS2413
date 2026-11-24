@@ -1,10 +1,9 @@
-"""HMAC integrity protection for stored credential data.
-  * A 32-byte key is created once and stored OUTSIDE the credential file.
-  * The keyed digest covers the canonical JSON encoding of the whole user
-    payload (schema version + users), so *any* change is detected: swapping a
-    hash, resetting a failed-attempt counter, deleting a lockout, injecting or
-    removing a user.
-  * Verification uses ``hmac.compare_digest`` (constant time).
+"""HMAC-SHA256 integrity checks for stored user records.
+
+Generates a 32-byte secret key stored separately from the credential file and
+computes a keyed digest over the canonical JSON payload (schema version and
+user records) to detect unauthorized edits, additions, or deletions.
+Digests are verified in constant time with hmac.compare_digest.
 """
 
 from __future__ import annotations
