@@ -77,7 +77,7 @@ To include Experiment 1, supply an existing **synthetic credential JSON** file:
 python generate_results.py --credential-file data/users.json
 ```
 
-The included results were generated on **2026-11-23** with the credential file at `data/users.json`. It records all ten experiments as PASS and the automated pytest suite as PASS. Experiment 1 inspected three synthetic accounts. The log reported zero plaintext passwords and zero identical password-hash collisions; each inspected account had a valid salted bcrypt hash. This is evidence about the supplied test file only, not a general audit of all possible credential stores.
+The included results were generated on **2026-11-23** with the credential file at `data/users.json`. It records all ten experiments as PASS and the automated pytest suite as PASS. Experiment 1 inspected three synthetic accounts. The log reported zero plaintext passwords and zero identical password hash collisions; each inspected account had a valid salted bcrypt hash. This is evidence about the supplied test file only, not a general audit of all possible credential stores.
 
 ### Latest recorded experiment status
 
@@ -104,7 +104,7 @@ A PASS means that the experiment's programmed checks completed successfully. It 
 
 ## Selected measured results
 
-### Credential-data inspection (Experiment 1)
+### Credential data inspection (Experiment 1)
 
 - Accounts inspected: **3**.
 - Plaintext passwords found: **0**.
@@ -140,11 +140,11 @@ With no lockout, the brute-force and dictionary simulations reached the correct 
 ### Additional checks
 
 - Experiment 3: 20/20 programmed checks passed. Generic failure messaging was observed. Median response times were 1.2 ms for an existing username and 0.9 ms for an unknown username; this small experiment does not prove the absence of a timing side channel.
-- Experiment 6: fixed lockout durations were 300 seconds for both first and second lockouts; exponential backoff increased from 30 to 60 seconds. Legitimate-user blocking demonstrates the availability trade-off.
+- Experiment 6: fixed lockout durations were 300 seconds for both first and second lockouts; exponential backoff increased from 30 to 60 seconds. Legitimate user blocking demonstrates the availability tradeoff.
 - Experiment 7: 17/17 checks passed for TOTP enrollment and verification scenarios.
 - Experiment 8: 21/21 checks passed for tampering scenarios, including modified hashes and lockout fields.
-- Experiment 9: 200/200 generated session tokens were unique; tokens used 256 random bits, and logout/invalidate-all behavior was tested.
-- Experiment 10: with 1,000 synthetic accounts, both backends completed the tested workload without concurrency errors. SQLite was faster for insertion and the concurrent-update workload in this run.
+- Experiment 9: 200/200 generated session tokens were unique; tokens used 256 random bits, and logout/invalidate all behavior was tested.
+- Experiment 10: with 1,000 synthetic accounts, both backends completed the tested workload without concurrency errors. SQLite was faster for insertion and the concurrent update workload in this run.
 
 ## Limitations and safe-use notes
 
@@ -154,11 +154,11 @@ With no lockout, the brute-force and dictionary simulations reached the correct 
 - Sessions are held in memory; restarting the application invalidates active sessions.
 - The password-reset demonstration does not provide a production-grade verified email or out-of-band delivery channel.
 - Account lockout can temporarily deny access to legitimate users; this is an availability trade-off.
-- Timing measurements are environment- and configuration-dependent. The fast test configuration is not a production benchmark.
+- Timing measurements are environment- and configuration dependent. The fast test configuration is not a production benchmark.
 
 ## Team responsibilities
 
-The responsibilities below reflect the revised proposal and should be checked by the team against actual work before submission.
+The responsibilities below reflect the revised proposal.
 
 | Member | Proposal-aligned responsibilities |
 |---|---|
