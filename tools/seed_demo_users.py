@@ -1,24 +1,21 @@
 """Create demo accounts for the CLI and manual testing.
 
-TEMPORARY scaffolding: the registration path (Hazem) is still a placeholder, so
-accounts are seeded directly through the storage interface.
-
 Run: ``python tools/seed_demo_users.py``
 """
-
 from __future__ import annotations
 
 import argparse
 import sys
 from pathlib import Path
 
-# Allow running this file directly (``python tools/seed_demo_users.py``): put the
-# project root on sys.path before importing the package.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from auth_system import devtools
+from auth_system.audit import AuditLog
 from auth_system.config import Settings
 from auth_system.errors import AuthSystemError, IntegrityError
+from auth_system.passwords import hash_password
+from auth_system.policy import PasswordPolicy
+from auth_system.registration import RegistrationService
 from auth_system.storage import create_storage
 
 DEMO_USERS = (
@@ -57,18 +54,22 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     try:
+        registrar = RegistrationService(
+            storage=storage,
+            policy=PasswordPolicy(settings),
+            audit=AuditLog(settings.audit_log_path),
+            settings=settings,
+            hasher=lambda pw: hash_password(pw, rounds=rounds),
+            clock=lambda: 1_700_000_000.0,
+        )
         for username, password in DEMO_USERS:
-            if storage.user_exists(username) and not args.force:
-                print(f"skip   {username} (already exists; use --force to replace)")
-                continue
-            devtools.seed_user(
-                storage,
-                username,
-                password,
-                rounds=rounds,
-                clock=lambda: 1_700_000_000.0,
-            )
-            print(f"create {username}")
+            if storage.user_exists(username):
+                if not args.force:
+                    print(f"skip   {username} (already exists; use --force to replace)")
+                    continue
+                storage.delete_user(username)
+            res = registrar.register(username, password)
+            print(f"{'create' if res.success else 'fail  '} {username}")
         print()
         print(storage.verify_integrity().describe())
         print()
