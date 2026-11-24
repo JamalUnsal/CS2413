@@ -174,4 +174,37 @@ All team members were assigned code review, testing, and presentation participat
 
 1. National Institute of Standards and Technology. *Digital Identity Guidelines: Authentication and Authenticator Management*, NIST SP 800-63B-4, 2025. https://pages.nist.gov/800-63-4/sp800-63b.html
 2. OWASP Foundation. *Password Storage Cheat Sheet*. https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
-3. M'Raihi, D., et al. *TOTP: Time-Based One-Time Password Algorithm*, RFC 6238, 2011. https://www.rfc-editor.org/rfc/rfc6238.html
+3. M'Raihi, D., Machani, S., Pei, M., & Rydell, J. *TOTP: Time-Based One-Time Password Algorithm*, RFC 6238, 2011. https://www.rfc-editor.org/rfc/rfc6238.html
+4. Provos, N., & Mazières, D. *A Future-Adaptable Password Scheme* (bcrypt), USENIX Annual Technical Conference, 1999. https://www.usenix.org/legacy/events/usenix99/provos/provos.pdf
+5. Biryukov, A., Dinu, D., & Khovratovich, D. *Argon2: New Generation of Memory-Hard Functions for Password Hashing and Other Applications*, IEEE European Symposium on Security and Privacy, 2016. https://www.rfc-editor.org/rfc/rfc9106.html
+6. Turan, M. S., Barker, E., Burr, W., & Chen, L. *Recommendation for Password-Based Key Derivation* (PBKDF2), NIST SP 800-132, 2010. https://csrc.nist.gov/pubs/sp/800/132/final
+7. Percival, C., & Josefsson, S. *The scrypt Password-Based Key Derivation Function*, RFC 7914, 2016. https://www.rfc-editor.org/rfc/rfc7914.html
+8. Krawczyk, H., Bellare, M., & Canetti, R. *HMAC: Keyed-Hashing for Message Authentication*, RFC 2104, 1997. https://www.rfc-editor.org/rfc/rfc2104.html
+9. Wheeler, D. *zxcvbn: Low-Budget Password Strength Estimation*, USENIX Security Symposium, 2016. https://www.usenix.org/conference/usenixsecurity16/technical-sessions/presentation/wheeler
+10. Python Software Foundation. *hashlib — Secure hashes and message digests*. https://docs.python.org/3/library/hashlib.html
+11. Python Software Foundation. *hmac — Keyed-Hashing for Message Authentication*. https://docs.python.org/3/library/hmac.html
+12. Python Software Foundation. *secrets — Generate secure random numbers for managing secrets*. https://docs.python.org/3/library/secrets.html
+13. Python Software Foundation. *base64 — Base16, Base32, Base64, Base85 Data Encodings*. https://docs.python.org/3/library/base64.html
+14. Python Software Foundation. *re — Regular expression operations*. https://docs.python.org/3/library/re.html
+15. Python Software Foundation. *time — Time access and conversions*. https://docs.python.org/3/library/time.html
+16. Python Software Foundation. *json — JSON encoder and decoder*. https://docs.python.org/3/library/json.html
+17. Python Software Foundation. *sqlite3 — DB-API 2.0 interface for SQLite databases*. https://docs.python.org/3/library/sqlite3.html
+18. Python Software Foundation. *logging — Logging facility for Python*. https://docs.python.org/3/library/logging.html
+19. Python Software Foundation. *tkinter — Python interface to Tcl/Tk*. https://docs.python.org/3/library/tkinter.html
+20. Python Cryptographic Authority (PyCA). *bcrypt* (PyPI). https://pypi.org/project/bcrypt/
+21. Schlawack, H. *argon2-cffi Documentation*. https://argon2-cffi.readthedocs.io/en/stable/
+22. PyOTP Contributors. *PyOTP — The Python One-Time Password Library*. https://pyauth.github.io/pyotp/
+23. Dropbox / dwolfhub. *zxcvbn-python* (PyPI). https://pypi.org/project/zxcvbn/
+24. Krekel, H., et al. *pytest Documentation*. https://docs.pytest.org/
+25. Matplotlib Development Team. *Matplotlib: Visualization with Python*. https://matplotlib.org/stable/
+26. Lincoln, L. *qrcode* (PyPI). https://pypi.org/project/qrcode/
+27. Clark, A., & Contributors. *Pillow (PIL Fork) Documentation*. https://pillow.readthedocs.io/
+28. SecLists / Daniel Miessler. *RockYou Leaked Password Dataset*. https://github.com/danielmiessler/SecLists/tree/master/Passwords/Leaked-Databases
+29. Supabase Inc. *Supabase Documentation*. https://supabase.com/docs
+30. Real Python. *Password Hashing in Python*. https://realpython.com/python-hashlib/
+31. W3Schools. *Python RegEx*. https://www.w3schools.com/python/python_regex.asp
+32. W3Schools. *Matplotlib Bars*. https://www.w3schools.com/python/matplotlib_bars.asp
+33. Stack Overflow. *ValueError: password cannot be longer than 72 bytes in bcrypt*. https://stackoverflow.com/questions/72551751/valueerror-password-cannot-be-longer-than-72-bytes-in-bcrypt
+34. Stack Overflow. *zxcvbn very slow for long passwords*. https://stackoverflow.com/questions/44530370/zxcvbn-very-slow-for-long-passwords
+35. Computerphile. *How NOT to Store Passwords*. YouTube. https://www.youtube.com/watch?v=8ZtInClXe1Q
+36. Schafer, C. *Matplotlib Tutorial (Part 2): Bar Charts and Analyzing Data*. YouTube. https://www.youtube.com/watch?v=nKxLfUrkLE8
