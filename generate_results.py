@@ -6,14 +6,6 @@ Run from the repository root:
     python generate_results.py
     python generate_results.py --credential-file data/users.json
     python generate_results.py --skip-tests
-
-The collector runs the experiment modules, captures their original output, and
-creates a results/ folder containing logs, machine-readable run metadata,
-a Markdown summary, and charts derived from the experiments' printed results.
-
-Experiment 1 is deliberately skipped unless --credential-file points to an
-existing credential JSON file. This avoids exp01's built-in mock-database
-creation being mistaken for real project evidence.
 """
 from __future__ import annotations
 
@@ -221,7 +213,6 @@ def make_charts(results_dir: Path, outputs: dict[str, str]) -> list[str]:
             created.append(str(path.relative_to(ROOT)))
 
     # Exp 6: first and second lockout durations.
-        # Exp 6: first and second lockout durations.
     lockout_rows = parse_pipe_table(
         outputs.get("exp06_lockout_abuse", ""),
         "Strategy"
@@ -460,13 +451,13 @@ def main() -> int:
         "|---|---:|---:|---|",
     ]
     for item in run_records:
-        log = f"`{item['log']}`" if item["log"] else "—"
+        log = f"`{item['log']}`" if item["log"] else "-"
         lines.append(
             f"| {item['title']} | **{item['status']}** | "
             f"{item['elapsed_seconds']} | {log} |"
         )
     if test_record is not None:
-        log = f"`{test_record['log']}`" if test_record.get("log") else "—"
+        log = f"`{test_record['log']}`" if test_record.get("log") else "-"
         lines.extend([
             "",
             "## Automated tests",

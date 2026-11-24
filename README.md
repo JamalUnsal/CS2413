@@ -1,17 +1,15 @@
-# Team 9 — Python-Based Password Authentication System
+# Team 9   Python-Based Password Authentication System
 
 **Course:** CS2413  
 **Project:** Design, Implementation, and Security Evaluation of a Python-Based Password Authentication System: Hashing, Policy Enforcement, and Attack Resistance  
 **Repository:** https://github.com/JamalUnsal/CS2413
 
 ## Project overview
-
 We developed a Python authentication prototype and evaluated its password-handling and account-protection controls through ten controlled experiments. The implementation includes password verification, password-policy checks, bcrypt-based credential hashing, fixed and exponential lockout strategies, TOTP multi-factor authentication (MFA), session lifecycle management, audit logging, credential-integrity checks, and JSON/SQLite storage backends.
 
 The project is an educational prototype. Experiments use synthetic accounts and controlled local inputs; they are not intended to target real users or third-party systems.
 
 ## Project objectives
-
 - Implement a modular password-authentication workflow.
 - Compare password-hashing approaches and measure their resistance in a bounded offline dictionary experiment.
 - Evaluate password-policy decisions against weak, common, username-related, medium, and strong candidates.
@@ -20,7 +18,6 @@ The project is an educational prototype. Experiments use synthetic accounts and 
 - Compare JSON and SQLite storage under a repeatable synthetic workload.
 
 ## Implemented security and authentication capabilities
-
 | Area | Implementation/evaluation |
 |---|---|
 | Password verification | bcrypt verification and generic credential-failure messaging |
@@ -35,7 +32,6 @@ The project is an educational prototype. Experiments use synthetic accounts and 
 The default application password-hashing implementation uses bcrypt. Argon2id is used in the comparative hashing experiment (2).
 
 ## Repository organization
-
 ```text
 CS2413/
 ├── auth_system/       # Authentication services, policy, MFA, sessions, lockout, audit, storage
@@ -47,10 +43,7 @@ CS2413/
 ├── requirements.txt
 └── README.md
 ```
-
-
 ## Requirements and setup
-
 - Python 3.10 or newer.
 - `pip`.
 - Dependencies in `requirements.txt`.
@@ -64,7 +57,6 @@ python -m pip install -r requirements.txt
 If your system uses `python3`, substitute `python3` for `python`.
 
 ## Experiments and reproducibility
-
 Run the complete experiment and test suite from the repository root:
 
 ```bash
@@ -80,7 +72,6 @@ python generate_results.py --credential-file data/users.json
 The included results were generated on **2026-11-23** with the credential file at `data/users.json`. It records all ten experiments as PASS and the automated pytest suite as PASS. Experiment 1 inspected three synthetic accounts. The log reported zero plaintext passwords and zero identical password hash collisions; each inspected account had a valid salted bcrypt hash. This is evidence about the supplied test file only, not a general audit of all possible credential stores.
 
 ### Latest recorded experiment status
-
 | Experiment | Focus | Status |
 |---|---|---|
 | 1 | Credential-data inspection | PASS |
@@ -95,7 +86,6 @@ The included results were generated on **2026-11-23** with the credential file a
 | 10 | JSON/SQLite comparison | PASS |
 
 **Automated tests:** PASS. The recorded pytest output corresponds to 98 tests. Rerun the suite after changing code or dependencies:
-
 ```bash
 python -m pytest -q
 ```
@@ -105,7 +95,6 @@ A PASS means that the experiment's programmed checks completed successfully. It 
 ## Selected measured results
 
 ### Credential data inspection (Experiment 1)
-
 - Accounts inspected: **3**.
 - Plaintext passwords found: **0**.
 - Identical hash collisions: **0**.
@@ -114,7 +103,6 @@ A PASS means that the experiment's programmed checks completed successfully. It 
 The experiment printed only hash prefixes in its log. The result supports the conclusion that the supplied synthetic JSON file contained no detected plaintext passwords and that the three inspected accounts had distinct salted hashes.
 
 ### Password hashing (Experiment 2)
-
 | Scheme | Mean hash time | Recovered in 2-second test window |
 |---|---:|---:|
 | Plaintext baseline | 0.00 ms | 70/100 |
@@ -126,19 +114,15 @@ The experiment printed only hash prefixes in its log. The result supports the co
 | bcrypt cost 10 | 53.02 ms | 0/100 |
 | bcrypt cost 12 | 212.00 ms | 0/100 |
 | Argon2id | 34.12 ms | 0/100 |
-
 The experiment used a fixed 100-account test set and a two-second cracking window per scheme. 
 
 ### Password policy (Experiment 4)
-
 The policy rejected 34 of 35 weak, common, or username-related candidates (**97.1%**), exceeding the proposal's 95% target. It accepted 12 of 12 strong candidates. Overall, 39 of 55 candidates were rejected.
 
 ### Online guessing (Experiment 5)
-
 With no lockout, the brute-force and dictionary simulations reached the correct password on the fourth attempt. Both fixed lockout and exponential backoff blocked that fourth attempt in the tested scenarios.
 
 ### Additional checks
-
 - Experiment 3: 20/20 programmed checks passed. Generic failure messaging was observed. Median response times were 1.2 ms for an existing username and 0.9 ms for an unknown username; this small experiment does not prove the absence of a timing side channel.
 - Experiment 6: fixed lockout durations were 300 seconds for both first and second lockouts; exponential backoff increased from 30 to 60 seconds. Legitimate user blocking demonstrates the availability tradeoff.
 - Experiment 7: 17/17 checks passed for TOTP enrollment and verification scenarios.
@@ -147,7 +131,6 @@ With no lockout, the brute-force and dictionary simulations reached the correct 
 - Experiment 10: with 1,000 synthetic accounts, both backends completed the tested workload without concurrency errors. SQLite was faster for insertion and the concurrent update workload in this run.
 
 ## Limitations and safe-use notes
-
 - This is a local educational prototype, not a production identity service.
 - The HMAC integrity key and TOTP provisioning secrets require protected secret storage in a real deployment. Do not publish secrets, provisioning URIs, QR codes, or generated credential files.
 - JSON storage rewrites the full file and is not safe for concurrent multi-process writers without an external locking strategy. SQLite provides transactional updates and stronger cross-process coordination.
@@ -157,7 +140,6 @@ With no lockout, the brute-force and dictionary simulations reached the correct 
 - Timing measurements are environment- and configuration dependent. The fast test configuration is not a production benchmark.
 
 ## Team responsibilities
-
 The responsibilities below reflect the revised proposal.
 
 | Member | Proposal-aligned responsibilities |
@@ -171,7 +153,6 @@ The responsibilities below reflect the revised proposal.
 All team members were assigned code review, testing, and presentation participation in the revised proposal.
 
 ## References
-
 1. National Institute of Standards and Technology. *Digital Identity Guidelines: Authentication and Authenticator Management*, NIST SP 800-63B-4, 2025. https://pages.nist.gov/800-63-4/sp800-63b.html
 2. OWASP Foundation. *Password Storage Cheat Sheet*. https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
 3. M'Raihi, D., Machani, S., Pei, M., & Rydell, J. *TOTP: Time-Based One-Time Password Algorithm*, RFC 6238, 2011. https://www.rfc-editor.org/rfc/rfc6238.html
@@ -181,19 +162,19 @@ All team members were assigned code review, testing, and presentation participat
 7. Percival, C., & Josefsson, S. *The scrypt Password-Based Key Derivation Function*, RFC 7914, 2016. https://www.rfc-editor.org/rfc/rfc7914.html
 8. Krawczyk, H., Bellare, M., & Canetti, R. *HMAC: Keyed-Hashing for Message Authentication*, RFC 2104, 1997. https://www.rfc-editor.org/rfc/rfc2104.html
 9. Wheeler, D. *zxcvbn: Low-Budget Password Strength Estimation*, USENIX Security Symposium, 2016. https://www.usenix.org/conference/usenixsecurity16/technical-sessions/presentation/wheeler
-10. Python Software Foundation. *hashlib — Secure hashes and message digests*. https://docs.python.org/3/library/hashlib.html
-11. Python Software Foundation. *hmac — Keyed-Hashing for Message Authentication*. https://docs.python.org/3/library/hmac.html
-12. Python Software Foundation. *secrets — Generate secure random numbers for managing secrets*. https://docs.python.org/3/library/secrets.html
-13. Python Software Foundation. *base64 — Base16, Base32, Base64, Base85 Data Encodings*. https://docs.python.org/3/library/base64.html
-14. Python Software Foundation. *re — Regular expression operations*. https://docs.python.org/3/library/re.html
-15. Python Software Foundation. *time — Time access and conversions*. https://docs.python.org/3/library/time.html
-16. Python Software Foundation. *json — JSON encoder and decoder*. https://docs.python.org/3/library/json.html
-17. Python Software Foundation. *sqlite3 — DB-API 2.0 interface for SQLite databases*. https://docs.python.org/3/library/sqlite3.html
-18. Python Software Foundation. *logging — Logging facility for Python*. https://docs.python.org/3/library/logging.html
-19. Python Software Foundation. *tkinter — Python interface to Tcl/Tk*. https://docs.python.org/3/library/tkinter.html
+10. Python Software Foundation. *hashlib   Secure hashes and message digests*. https://docs.python.org/3/library/hashlib.html
+11. Python Software Foundation. *hmac   Keyed-Hashing for Message Authentication*. https://docs.python.org/3/library/hmac.html
+12. Python Software Foundation. *secrets   Generate secure random numbers for managing secrets*. https://docs.python.org/3/library/secrets.html
+13. Python Software Foundation. *base64   Base16, Base32, Base64, Base85 Data Encodings*. https://docs.python.org/3/library/base64.html
+14. Python Software Foundation. *re   Regular expression operations*. https://docs.python.org/3/library/re.html
+15. Python Software Foundation. *time   Time access and conversions*. https://docs.python.org/3/library/time.html
+16. Python Software Foundation. *json   JSON encoder and decoder*. https://docs.python.org/3/library/json.html
+17. Python Software Foundation. *sqlite3   DB-API 2.0 interface for SQLite databases*. https://docs.python.org/3/library/sqlite3.html
+18. Python Software Foundation. *logging   Logging facility for Python*. https://docs.python.org/3/library/logging.html
+19. Python Software Foundation. *tkinter   Python interface to Tcl/Tk*. https://docs.python.org/3/library/tkinter.html
 20. Python Cryptographic Authority (PyCA). *bcrypt* (PyPI). https://pypi.org/project/bcrypt/
 21. Schlawack, H. *argon2-cffi Documentation*. https://argon2-cffi.readthedocs.io/en/stable/
-22. PyOTP Contributors. *PyOTP — The Python One-Time Password Library*. https://pyauth.github.io/pyotp/
+22. PyOTP Contributors. *PyOTP   The Python One-Time Password Library*. https://pyauth.github.io/pyotp/
 23. Dropbox / dwolfhub. *zxcvbn-python* (PyPI). https://pypi.org/project/zxcvbn/
 24. Krekel, H., et al. *pytest Documentation*. https://docs.pytest.org/
 25. Matplotlib Development Team. *Matplotlib: Visualization with Python*. https://matplotlib.org/stable/
