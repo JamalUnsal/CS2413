@@ -22,7 +22,7 @@ from auth_system.errors import AuthSystemError, IntegrityError
 from auth_system.storage import create_storage
 
 DEMO_USERS = (
-    ("alice", "Correct-Horse-Battery-9!"),
+    ("alice", "jennifer"),
     ("bob", "Another-Str0ng-Pass!"),
     ("carol", "Third-Demo-Password-7!"),
 )
