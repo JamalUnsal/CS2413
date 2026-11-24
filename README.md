@@ -10,8 +10,6 @@ We developed a Python authentication prototype and evaluated its password-handli
 
 The project is an educational prototype. Experiments use synthetic accounts and controlled local inputs; they are not intended to target real users or third-party systems.
 
-> **Submission note:** The detailed Threat/Security Analysis is a separate course deliverable. This README provides an implementation and evaluation overview; it does not replace that separate analysis.
-
 ## Project objectives
 
 - Implement a modular password-authentication workflow.
