@@ -1,12 +1,8 @@
-"""The shared user-record schema (JSON and SQLite backends store this shape).
+"""User-record schema shared by the JSON and SQLite storage backends.
 
-Field list follows Section 5 of the proposal: username, password hash,
-per-user salt (kept for comparison schemes; bcrypt embeds its salt), lockout
-state, TOTP secret, reset-token state and timestamps.
-
-`password_hash` is the only secret material needed to verify a password.
-`totp_secret` is stored in the same record for the prototype; in production it
-would live in a dedicated secret store.
+Stores the username, password hash, per-user salt, lockout state, TOTP
+secret, password reset state, and account timestamps as specified in
+Section 5 of the proposal.
 """
 
 from __future__ import annotations

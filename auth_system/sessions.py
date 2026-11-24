@@ -1,11 +1,9 @@
-"""Session tokens.
-Properties:
-  * tokens come from ``secrets.token_urlsafe`` (CSPRNG, 256 bits by default);
-  * only the SHA-256 fingerprint is kept in memory, so a memory dump of the
-    session table does not yield usable bearer tokens;
-  * every session has an absolute expiry (no sliding renewal by default);
-  * logout invalidates immediately, and ``invalidate_all`` supports password
-    change/reset (Shalom's module calls it).
+"""In-memory session token management.
+
+Generates 256-bit URL-safe random tokens via secrets.token_urlsafe and stores
+only their SHA-256 fingerprints in memory. Sessions enforce an absolute
+expiration and support immediate single-session logout as well as bulk
+invalidation on password change or reset.
 """
 from __future__ import annotations
 
